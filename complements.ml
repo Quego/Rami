@@ -1,5 +1,5 @@
 (* Permet de déterminer si une chaîne de caractères est un mot en majuscules *)
-
+(**)
 let valide s =
   ((String.length s) <> 0) &&
     begin
