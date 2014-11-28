@@ -3,8 +3,9 @@
 #load "camlp4o.cma";;
 #load "myStream.cmo";;
 
-#use "type.ml"
+#use "type.ml";;
 #use "tokenize.ml" ;;
+#use "pretty_printer.ml"
 
 
 
@@ -79,34 +80,41 @@ parser
 
 let x = test_tokenize "*";;
 let y = of_bool_token_list_to_token_Stream x;;
-parser_tuile y
+let z =parser_tuile y;;
+let _  = print_string (( pretty_tuile z) ^"\n");;
 ;;
 
 let x = test_tokenize" C A B * R ";;
 let y = of_bool_token_list_to_token_Stream x;;
-parser_tuiles y;
+let z = parser_tuiles y;;
+let _  = print_string (( pretty_tuiles z) ^"\n");;
 ;;
+
 
 let x = test_tokenize "( F A C I L E)";;
 let y = of_bool_token_list_to_token_Stream x;;
-parser_coup y
+let z = parser_coup y
+let _  = print_string (( pretty_coup z) ^"\n");;
 ;;
 
 let x = test_tokenize "( F A C I L E)
 ( C A * B R )";;
 let y = of_bool_token_list_to_token_Stream x;;
-parser_coups y ;;
+let z =parser_coups y ;;
+let _  = print_string (( pretty_coups z) ^"\n");;
 
 let x = test_tokenize "(Pascal 17 true (S P O I N E * ))";;
-let y = of_bool_token_list_to_token_Stream x;;
-parser_joueur y
+let y = of_bool_token_list_to_token_Stream x;; 
+let z = parser_joueur y
+clet _  = print_string (( pretty_joueur z) ^"\n");;
 ;; 
 
 let x = test_tokenize "(Pascal 17 true (S P O I N E * ))
 (Laurent 42 true (N S A V))
 (Marion 0 false (E E I N)))";;
 let y = of_bool_token_list_to_token_Stream x;;
-parser_joueurs y
+let z = parser_joueurs y
+let _  = print_string (( pretty_joueurs z) ^"\n");;
 ;;
 
 let x = test_tokenize "(joueurs
@@ -122,14 +130,10 @@ C S N H I )
 ;;
 
 
-
-
-
-
 let y = of_bool_token_list_to_token_Stream x;;
 
 let z = parser_jeu y;;
 
 
-
+let _  = print_string (( pretty_jeu z) ^"\n");;
 
