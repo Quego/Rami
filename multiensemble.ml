@@ -22,7 +22,7 @@ match m with
     else appartient x q
       
     let rec (egal : 'a mset -> 'a mset -> bool ) = fun m1 m2 ->
-      let n1 = (List.sort Pervasives.compare m1) and n2 = (List.sort Pervasives.compare m2) in
+      let n1 = (List.sort Pervasives.compare m1) and n2 = (List.sort Pervasives.compare m2) in (*Tri les ensembles pour les comparer *)
       let rec (meme_list : 'a mset -> 'a mset -> bool) = fun l1 l2 ->
 	  match (l1,l2) with
 	    | ([],[]) -> true
