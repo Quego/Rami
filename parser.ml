@@ -1,7 +1,7 @@
-
+(*
 #load "dynlink.cma";;
 #load "camlp4o.cma";;
-#load "myStream.cmo";;
+#load "myStream.cmo";;*)
 
 #use "type.ml";;
 #use "tokenize.ml" ;;
@@ -69,12 +69,10 @@ let rec (parser_joueurs : token Stream.t -> joueurs ) =
    | [< >] -> []
 ;;
 
-let (parser_jeu) = 
-parser
+let (parser_jeu : token Stream.t -> jeu) = 
+  parser
   | [< 'LPar ; '(Kwd "joueurs") ; js = parser_joueurs ;  'RPar ; 'LPar ; '(Kwd "jeu") ; cs = parser_coups ; 'RPar ; 'LPar ; '(Kwd "pioche") ; ts = parser_tuiles ; 'RPar ; 'LPar ; '(Kwd "tour") ; '(Int int) >] -> (js,cs,ts,int)
 ;;
-
-
 
 (* TESTES *)
 

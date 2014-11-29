@@ -8,7 +8,7 @@ let rec (pretty_tuiles : tuiles -> string ) = fun ts ->
 String.concat " " (List.map pretty_tuile ts)
 ;;
 
-let  (pretty_coup : coup -> string ) = fun (Coup(ts)) ->
+let (pretty_coup : coup -> string ) = fun (Coup(ts)) ->
 "(" ^ (pretty_tuiles ts) ^ ")"
 ;;
 
@@ -17,7 +17,7 @@ String.concat " " (List.map pretty_coup cs)
 ;;
 
 let (pretty_joueur : joueur -> string ) = fun (p,i,b,c) ->
-"(" ^ p ^ " " ^  (Pervasives.string_of_int i) ^ " " ^ b ^ " " ^ (pretty_coup c) ")"
+"(" ^ p ^ " " ^  (Pervasives.string_of_int i) ^ " " ^ b ^ " " ^ (pretty_coup c) ^ ")"
 ;;
 
 let rec (pretty_joueurs : joueurs -> string ) = fun js ->

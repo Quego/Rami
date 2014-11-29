@@ -132,6 +132,9 @@ type token =
   | Bool of string
 ;;
 
+type token_dico = 
+  | Identd of string
+;;
 
 let (tokenize_with : keywords -> symbols -> bools -> char Stream.t -> token Stream.t ) = fun keywords  symbols bools stream -> 
   let rec (tokenize : char Stream.t -> token Stream.t) =
@@ -153,6 +156,17 @@ let (tokenize_with : keywords -> symbols -> bools -> char Stream.t -> token Stre
       in tokenize stream
 ;;
 
+
+let rec (tokenize_dico : char Stream.t -> token_dico Stream.t) = 
+  parser
+    | [< ' ('\n') ; tokens = tokenize_dico >] -> tokens
+    | [< str = ident ; tokens = tokenize_dico >] -> Stream.icons (Identd str) tokens
+    | [< >] -> Stream.sempty
+;;
+
+
+
+
 let  (tokenizer: char Stream.t -> token Stream.t) = fun stream -> tokenize_with ["joueurs";"jeu"; "pioche";"tour"] [ "(" ; ")"; "*"] ["true";"false"]  stream
 ;;
 
@@ -167,6 +181,12 @@ let (tokenize_list_file : string -> bool * token list ) = fun str ->
 
 
 (* TEST *)
+
+let (test_tokenize_dico:string -> bool * token_dico list) = fun string ->
+      let (bool,token_stream) = parse_with tokenize_dico string 
+      in (bool, MyStream.to_list token_stream)
+;;
+
 
 let (test_tokenize_with: keywords -> symbols -> bools -> string -> bool * token list) = fun keywords symbols bools string ->
       let (bool,token_stream) = parse_with (tokenize_with keywords symbols bools) string 
