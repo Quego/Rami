@@ -1,6 +1,6 @@
-#load "dynlink.cma" 
+(*#load "dynlink.cma" 
 #load "camlp4o.cma"
-#load "myStream.cmo";
+#load "myStream.cmo";*)
 
 #use "tokenize.ml";;
 
@@ -112,6 +112,7 @@ module Dictionnaire =
 
 
 (*BONUS A FAIRE *)
+(*
 let x = Stream.of_string "coucou
 comment
 va
@@ -178,3 +179,4 @@ Dictionnaire.remove "aab" x;;
 
 Dictionnaire.member "aab" x;;
 
+*)
