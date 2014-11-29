@@ -8,10 +8,12 @@ module Dictionnaire =
   struct 
 
     type dico = Noeud of dico array * bool | Feuille
+    ;;
 
     let (dico_vide : dico ) = Noeud((Array.make 26 Feuille), false)
+    ;;
 
-(* Cas avec * a rajouter *)
+(* CAS AVEC * A RAJOUTER *)
     let rec (member : string -> dico -> bool)  = fun s d ->
       if ((String.length s) == 0 ) then 
 	match d with
@@ -26,8 +28,8 @@ module Dictionnaire =
 	       and _s = (String.sub s 1 ((String.length s) -1))
 		  in member _s new_d
 	  | Feuille -> false
-;;
-
+    ;;
+(*Ajouter que les mots de plus de 3 lettres? *)
     let rec (add : string -> dico -> dico) = fun s d ->
       if ((String.length s) == 0 ) then 
 	match d with
@@ -73,8 +75,8 @@ module Dictionnaire =
     ;;
 
 
-    let rec (of_stream : char Stream.t -> dico ) = fun cs ->
-      let rec (parser_dico : token_dico Stream.t -> dico ) = fun t ->
+    let (of_stream : char Stream.t -> dico ) = fun cs ->
+      let (parser_dico : token_dico Stream.t -> dico ) = fun t ->
 	let rec (parser_dico_acc :  token_dico Stream.t -> dico -> dico ) = fun s acc ->
 	  match s with parser
 	    | [< '(Identd ident) ; td >] -> parser_dico_acc td (add ident acc)
@@ -83,18 +85,47 @@ module Dictionnaire =
       in parser_dico (tokenize_dico cs)
     ;;
 
+(* NE MARCHE PAS *)
+    let (to_list : dico -> string list ) = fun d ->
+      let rec (to_list_aux : dico -> int -> string -> string list ) = fun da i s ->
+	if (i<0) then []
+	else 
+	  match da with
+	    |(Noeud(db,false)) -> let char = Char.escaped (Pervasives.char_of_int ( i-1 + Char.code 'a')) 
+				  in let new_s = (s^char)	  
+					in let new_d =  (Array.get db (i-1))
+					   in (to_list_aux new_d i new_s) 
+	    |(Noeud(db,true)) -> let char = Char.escaped (Pervasives.char_of_int ( i-1 + Char.code 'a'))
+				  in let new_s = (s^char)	  
+					in let new_d =  (Array.get db (i-1))
+					   in s::(to_list_aux new_d i new_s)
+	    |Feuille ->	(* let new_d =  (Array.get da (i-1))
+			 in *)to_list_aux da (i-1) s 
+      in to_list_aux d 26 ("")
+    ;;
+
   end
 ;;
 
 
+(*FAIRE UN JEU DE TEST + TESTER SUR LE VRAI DICO *)
+
+
+(*BONUS A FAIRE *)
 let x = Stream.of_string "coucou
 comment
 va
-la"
+la
+zy
+z
+yz
+yy"
 ;;
 ;;
 
 let dico = Dictionnaire.of_stream x;;
+
+let ret = Dictionnaire.to_list dico;;
 
 let x = tokenize_dico x ;;
 

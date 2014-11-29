@@ -16,4 +16,8 @@ sig
   val lit_valeur : token list -> t
   val ecrit_valeur : t -> string
   val fin_pioche_vide : bool
-end;;
+end
+;;
+
+module Lettres : REGLE
+;;
