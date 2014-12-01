@@ -6,21 +6,60 @@
 #use "dictionnaire.ml";;
 
 module Lettres =
-  struct
- 
-    type t = char
-    ;;
-    type combi = t list
-    ;;
-    type main = t MultiEnsemble.mset
-    ;; 
-    type etat = { noms: string array; scores: int array; mains: main array;
+struct
+  
+  type t = char
+  ;;
+  type combi = t list
+  ;;
+  type main = t MultiEnsemble.mset
+  ;; 
+  type etat = { noms: string array; scores: int array; mains: main array;
 		table: combi list; pioche: main; pose: bool array; tour: int}
-    ;;
-
-    let (combi_valide : combi -> bool ) = fun c -> (List.length c > 3)
-    ;;
-      
+  ;;
+  
+  let (combi_valide : combi -> bool ) = fun c -> (List.length c > 3)
+  ;;
+  
+  
+  let (main_min : int ) = 7
+  ;;
+  
+  let (main_initiale : int ) = 14
+  ;;
+  
+    
 
   end 
+;;
+
+module Rummikub = 
+struct
+
+  type couleur = 
+    | Bleu
+    | Rouge
+    | Jaune
+    | Noir
+  ;;
+
+  type t = 
+     int*couleur
+  ;;
+
+  type main = t MultiEnsemble.mset
+  ;;
+
+  type etat = { noms: string array; scores: int array; mains: main array;
+		table: combi list; pioche: main; pose: bool array; tour: int}
+  ;;
+
+  let (main_min : int ) = 7
+  ;;
+  
+  let (main_initiale : int ) = 14
+  ;;
+  
+
+end
 ;;

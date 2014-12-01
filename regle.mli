@@ -20,3 +20,6 @@ end
 
 module Lettres : REGLE
 ;;
+
+module Rummikub : REGLE
+;;
