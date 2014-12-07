@@ -1,8 +1,9 @@
-(*#load "dynlink.cma" 
+#load "dynlink.cma" 
 #load "camlp4o.cma"
-#load "myStream.cmo";*)
+#load "myStream.cmo";
 
 #use "tokenize.ml";;
+
 
 module Dictionnaire =
   struct 
@@ -13,22 +14,37 @@ module Dictionnaire =
     let (dico_vide : dico ) = Noeud((Array.make 26 Feuille), false)
     ;;
 
-(* CAS AVEC * A RAJOUTER *)
+
     let rec (member : string -> dico -> bool)  = fun s d ->
       if ((String.length s) == 0 ) then 
 	match d with
 	  |(Noeud(_,b)) -> b 
 	  | Feuille -> false			
       else 
-	match d with
-	  | (Noeud(da,b)) ->
-	    let char_s = String.get s 0 
-	    in let num_s = (Char.code char_s) - (Char.code 'a')
-	       in let new_d =  (Array.get da num_s)
-	       and _s = (String.sub s 1 ((String.length s) -1))
-		  in member _s new_d
+	if ( (String.get s 0) == '*'  )
+	then match d with
+	  | (Noeud(da,_)) ->
+	    let rec (member_joker : string -> dico -> int -> bool)  = fun s d i->
+	      let new_d =  (Array.get da i)
+	      and _s = (String.sub s 1 ((String.length s) -1))
+	      in  if (i>0) then
+		  member _s new_d || member_joker s d (i-1)
+		else  
+		  member _s new_d
+	    in member_joker s d 25
 	  | Feuille -> false
+	else
+	  match d with
+	    | (Noeud(da,_)) ->
+	      let char_s = String.get s 0 
+	      in let num_s = (Char.code char_s) - (Char.code 'a')
+		 in let new_d =  (Array.get da num_s)
+		 and _s = (String.sub s 1 ((String.length s) -1))
+		    in member _s new_d
+	    | Feuille -> false
     ;;
+
+
 (*Ajouter que les mots de plus de 3 lettres? *)
     let rec (add : string -> dico -> dico) = fun s d ->
       if ((String.length s) == 0 ) then 
@@ -84,49 +100,78 @@ module Dictionnaire =
 	in parser_dico_acc t (dico_vide)
       in parser_dico (tokenize_dico cs)
     ;;
-
+(*
 (* NE MARCHE PAS *)
-    let (to_list : dico -> string list ) = fun d ->
-      let rec (to_list_aux : dico -> int -> string -> string list ) = fun da i s ->
+   (* let (to_list : dico -> string list ) = fun d -> *)
+      let rec (to_list_aux : dico -> int -> int -> string -> string list ) = fun da i s ->
 	if (i<0) then []
 	else 
 	  match da with
-	    |(Noeud(db,false)) -> let char = Char.escaped (Pervasives.char_of_int ( i-1 + Char.code 'a')) 
+	    |(Noeud(db,false)) -> let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a')) 
 				  in let new_s = (s^char)	  
-					in let new_d =  (Array.get db (i-1))
-					   in (to_list_aux new_d i new_s) 
-	    |(Noeud(db,true)) -> let char = Char.escaped (Pervasives.char_of_int ( i-1 + Char.code 'a'))
+					in let new_d =  (Array.get db i)
+					   in (to_list_aux new_d i new_s)
+	    |(Noeud(db,true)) -> let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a'))
 				  in let new_s = (s^char)	  
-					in let new_d =  (Array.get db (i-1))
+					in let new_d =  (Array.get db i)
 					   in s::(to_list_aux new_d i new_s)
-	    |Feuille ->	(* let new_d =  (Array.get da (i-1))
-			 in *)to_list_aux da (i-1) s 
-      in to_list_aux d 26 ("")
-    ;;
+	    |Feuille ->	to_list_aux da (i-1) s 
+ (*     in to_list_aux d 25 ("")*)
+      ;;*)
 
   end
 ;;
 
 
+(* Double car on rentre plusieurs fois au même true *)
+let rec (to_list_aux : Dictionnaire.dico -> int -> string -> string list) = fun da i s ->
+ if (i<0) then 
+   []
+ else
+   match da with 
+     |(Dictionnaire.Noeud(db,false)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a')) 
+				       in let new_s = (s^char)
+					  in let new_d =  (Array.get db i)
+					      in (to_list_aux2 new_d 25 new_s)
+     |(Dictionnaire.Noeud(db,true)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a'))
+				      in let new_s = (s^char)	  
+					 in let new_d =  (Array.get db i)
+					    in s::(to_list_aux2 new_d 25 new_s)
+     |Dictionnaire.Feuille -> to_list_aux da (i-1) s
+
+and
+let rec (to_list_aux2 : Dictionnaire.dico -> int -> string -> string list)  = fun d2 j s2 ->
+  if (j>0) then
+    (to_list_aux d2 j s2)@(to_list_aux2 d2 (j-1) s2)
+  else  
+    to_list_aux d2 j s2 
+;;
+
 (*FAIRE UN JEU DE TEST + TESTER SUR LE VRAI DICO *)
 
 
 (*BONUS A FAIRE *)
-(*
-let x = Stream.of_string "coucou
-comment
-va
-la
-zy
-z
+
+let x = Stream.of_string "z
+a
+zz
+zzzz
+zyx
+az
+zazeeb
+a
 yz
 yy"
 ;;
 ;;
 
+
 let dico = Dictionnaire.of_stream x;;
 
-let ret = Dictionnaire.to_list dico;;
+let ret = to_list_aux2 dico 25 ("");;
+
+
+let ret = Dictionnaire.to_list_aux dico 25 25("");;
 
 let x = tokenize_dico x ;;
 
