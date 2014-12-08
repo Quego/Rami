@@ -8,6 +8,3 @@ sig
    val egal : 'a mset -> 'a mset -> bool
 end 
 ;;
-
-module List : MultiEnsemble
-;;

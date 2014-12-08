@@ -23,8 +23,8 @@
 (*
 #load "dynlink.cma" 
 #load "camlp4o.cma"
-#load "myStream.cmo";;
-*)
+#load "myStream.cmo";;*)
+
 
 type filename = string;;
 

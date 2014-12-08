@@ -1,6 +1,6 @@
-#load "dynlink.cma" 
-#load "camlp4o.cma"
-#load "myStream.cmo";
+(*#load "dynlink.cma" ;;
+#load "camlp4o.cma";;
+#load "myStream.cmo";;*)
 
 #use "tokenize.ml";;
 
@@ -139,8 +139,7 @@ let rec (to_list_aux : Dictionnaire.dico -> int -> string -> string list) = fun 
 					    in s::(to_list_aux2 new_d 25 new_s)
      |Dictionnaire.Feuille -> to_list_aux da (i-1) s
 
-and
-let rec (to_list_aux2 : Dictionnaire.dico -> int -> string -> string list)  = fun d2 j s2 ->
+and  (to_list_aux2 : Dictionnaire.dico -> int -> string -> string list)  = fun d2 j s2 ->
   if (j>0) then
     (to_list_aux d2 j s2)@(to_list_aux2 d2 (j-1) s2)
   else  
@@ -151,7 +150,7 @@ let rec (to_list_aux2 : Dictionnaire.dico -> int -> string -> string list)  = fu
 
 
 (*BONUS A FAIRE *)
-
+(*
 let x = Stream.of_string "z
 a
 zz
@@ -165,6 +164,8 @@ yy"
 ;;
 ;;
 
+
+let x = Stream.of_string "a";;
 
 let dico = Dictionnaire.of_stream x;;
 

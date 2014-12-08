@@ -1,7 +1,7 @@
-
+(*
 #load "dynlink.cma";;
 #load "camlp4o.cma";;
-#load "myStream.cmo";;
+#load "myStream.cmo";;*)
 
 #use "type.ml";;
 #use "tokenize.ml" ;;
