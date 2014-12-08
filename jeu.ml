@@ -3,22 +3,42 @@
 #load "myStream.cmo";
 #use "regle.ml";;
 
+
 module TJeu = functor (Rule : REGLE) ->
     struct
-(*
-      let ( coup_valide : Rule.combi list -> Rule.main -> Rule.combi list -> Rule.main -> bool  -> bool ) = fun cl1 m1 cl2 m2 b ->*)
-(*
-      let (initialiser : string list -> Rule.etat ) = fun sl ->
-(*	let (initialiser_aux : string list -> int -> Rule.etat ) = fun sla i ->*)
-{noms=[|""|];scores=[||];mains=[||];table=[];pioche = [];pose = []; tour = 0}
-      ;;*)
 
-let (pq1 : Rule.etat) = {Rule.noms=[|"salut";"t"|];scores=[||];mains=[||];table=[];pioche = [];pose = [||]; tour = 0}
+(* Cas des main et de la pioche a faire ( mais j'ai pas fait les fonctions avant ^^*)
+      let (initialiser : string list -> Rule.etat ) = fun sl ->
+	let lg = List.length sl in
+	let name_array  = Array.of_list sl
+	and scores_array = Array.make lg 0
+	and main_array = Array.make lg  []
+	and table_list = []
+	and pioche_list = []
+	and pose_array = Array.make lg false
+	and turn = 0
+	in  {Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = pioche_list;pose = pose_array; tour = turn}
+
+      ;;
+(*
+      let (lit_coup :  string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option) = fun s m cl b ->
+	if (bool == false) then
+	  None
+	else
+	  *)
       ;;
 
-    end 
+    end
 ;;
 
+
+
+
+
+module LettresTJeu = TJeu(Lettres);;
+
+LettresTJeu.initialiser ["Quentin";"Thibaul";"Jules"];;
+(*
 type paquet = { cont : contenu; poids : int ; s : solidite }
 ;;
 
@@ -48,4 +68,4 @@ sig
   val ecrit_valeur : t -> string
   val fin_pioche_vide : bool
 end
-;;
+;;*)

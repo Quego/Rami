@@ -148,9 +148,9 @@ and  (to_list_aux2 : Dictionnaire.dico -> int -> string -> string list)  = fun d
 
 (*FAIRE UN JEU DE TEST + TESTER SUR LE VRAI DICO *)
 
-
-(*BONUS A FAIRE *)
 (*
+(*BONUS A FAIRE *)
+
 let x = Stream.of_string "z
 a
 zz
@@ -165,7 +165,6 @@ yy"
 ;;
 
 
-let x = Stream.of_string "a";;
 
 let dico = Dictionnaire.of_stream x;;
 
