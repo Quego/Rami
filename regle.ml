@@ -59,20 +59,29 @@ struct
 	in premier_coup_valide_cont m cl
       else false
   ;;
-(*
-  let (points : combi list -> main -> int) 
+
+  let (points : combi list -> main -> combi list -> main -> int) = fun cl1 m1 cl2 m 2 ->
+    
   ;;
 
+
   let (points_finaux : main -> int ) = fun m ->
-*)  
+  
   
   let (main_min : int ) = 7
   ;;
   
   let (main_initiale : int ) = 14
   ;;
+
+  let (fin_pioche_vide : bool ) = false
+  ;;
+  
   end 
 ;;
+
+
+
 (*
 premier_coup_valide_aux ['b';'c';'d'] ['a';'b';'c'];;
 

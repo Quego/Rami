@@ -12,20 +12,21 @@ sig
   val paquet : t MultiEnsemble.mset
   val combi_valide : combi -> bool
   val premier_coup_valide : main (* main du joueur *) -> combi list (* pose du joueur *) (* -> main  nouvelle main du joueur *) -> bool
- (* val points : combi list (* jeu en cours *) -> main (* main du joueur *) -> combi list (* nouveau jeu *) -> main (* nouvelle main du joueur *) -> int
-  val points_finaux : main -> int*)
+  val points : combi list (* jeu en cours *) -> main (* main du joueur *) -> combi list (* nouveau jeu *) -> main (* nouvelle main du joueur *) -> int
+(*  val points_finaux : main -> int *)
   val main_min : int
   val main_initiale : int
  (* val lit_valeur : token list -> t
-  val ecrit_valeur : t -> string
-  val fin_pioche_vide : bool*)
+  val ecrit_valeur : t -> string*)
+  val fin_pioche_vide : bool
 end
 ;;
 
-
+(*
 module Lettres : REGLE
 ;;
 
 module Rummikub : REGLE
 ;;
 
+*)
