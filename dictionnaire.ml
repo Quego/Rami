@@ -1,6 +1,6 @@
-(*#load "dynlink.cma" ;;
+#load "dynlink.cma" ;;
 #load "camlp4o.cma";;
-#load "myStream.cmo";;*)
+#load "myStream.cmo";;
 
 #use "tokenize.ml";;
 
@@ -100,55 +100,41 @@ module Dictionnaire =
 	in parser_dico_acc t (dico_vide)
       in parser_dico (tokenize_dico cs)
     ;;
-(*
+
 (* NE MARCHE PAS *)
-   (* let (to_list : dico -> string list ) = fun d -> *)
-      let rec (to_list_aux : dico -> int -> int -> string -> string list ) = fun da i s ->
-	if (i<0) then []
-	else 
-	  match da with
-	    |(Noeud(db,false)) -> let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a')) 
-				  in let new_s = (s^char)	  
-					in let new_d =  (Array.get db i)
-					   in (to_list_aux new_d i new_s)
-	    |(Noeud(db,true)) -> let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a'))
-				  in let new_s = (s^char)	  
-					in let new_d =  (Array.get db i)
-					   in s::(to_list_aux new_d i new_s)
-	    |Feuille ->	to_list_aux da (i-1) s 
- (*     in to_list_aux d 25 ("")*)
-      ;;*)
+    let (to_list : dico -> string list ) = fun d -> 
+      let rec (to_list_aux : dico -> int -> string -> string list) = fun da i s ->
+	if (i<0) then 
+	  []
+	else
+	  match da with 
+	    |(Noeud(db,false)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a')) 
+				 in let new_s = (s^char)
+				    in let new_d =  (Array.get db i)
+				       in (to_list_aux2 new_d 25 new_s)
+	    |(Noeud(db,true)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a'))
+				in let new_s = (s^char)	  
+				   in let new_d =  (Array.get db i)
+				      in s::(to_list_aux2 new_d 25 new_s)
+	    |Feuille -> to_list_aux da (i-1) s
+
+      and  (to_list_aux2 : dico -> int -> string -> string list)  = fun d2 j s2 ->
+	if (j>0) then
+	  match d2 with
+	    |Noeud(df,b) -> (to_list_aux d2 j s2)@(to_list_aux2 (Noeud(df,false)) (j-1) s2)
+	    |Feuille ->  (to_list_aux d2 j s2)@(to_list_aux2 d2 (j-1) s2)
+	else  
+	  to_list_aux d2 j s2 
+      in to_list_aux2 d 25 ("") 
+      ;;
 
   end
 ;;
 
 
-(* Double car on rentre plusieurs fois au même true *)
-let rec (to_list_aux : Dictionnaire.dico -> int -> string -> string list) = fun da i s ->
- if (i<0) then 
-   []
- else
-   match da with 
-     |(Dictionnaire.Noeud(db,false)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a')) 
-				       in let new_s = (s^char)
-					  in let new_d =  (Array.get db i)
-					      in (to_list_aux2 new_d 25 new_s)
-     |(Dictionnaire.Noeud(db,true)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a'))
-				      in let new_s = (s^char)	  
-					 in let new_d =  (Array.get db i)
-					    in s::(to_list_aux2 new_d 25 new_s)
-     |Dictionnaire.Feuille -> to_list_aux da (i-1) s
-
-and  (to_list_aux2 : Dictionnaire.dico -> int -> string -> string list)  = fun d2 j s2 ->
-  if (j>0) then
-    (to_list_aux d2 j s2)@(to_list_aux2 d2 (j-1) s2)
-  else  
-    to_list_aux d2 j s2 
-;;
-
 (*FAIRE UN JEU DE TEST + TESTER SUR LE VRAI DICO *)
 
-(*
+
 (*BONUS A FAIRE *)
 
 let x = Stream.of_string "z
@@ -171,7 +157,7 @@ let dico = Dictionnaire.of_stream x;;
 let ret = to_list_aux2 dico 25 ("");;
 
 
-let ret = Dictionnaire.to_list_aux dico 25 25("");;
+let ret = Dictionnaire.to_list dico ;;
 
 let x = tokenize_dico x ;;
 
