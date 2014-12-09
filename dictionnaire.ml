@@ -37,7 +37,7 @@ module Dictionnaire =
 	  match d with
 	    | (Noeud(da,_)) ->
 	      let char_s = String.get s 0 
-	      in let num_s = (Char.code char_s) - (Char.code 'a')
+	      in let num_s = (Char.code char_s) - (Char.code 'A')
 		 in let new_d =  (Array.get da num_s)
 		 and _s = (String.sub s 1 ((String.length s) -1))
 		    in member _s new_d
@@ -55,7 +55,7 @@ module Dictionnaire =
 	match d with
 	  | (Noeud(da,b)) ->
 	    let char_s = String.get s 0 
-	    in let num_s = (Char.code char_s) - (Char.code 'a')	  
+	    in let num_s = (Char.code char_s) - (Char.code 'A')	  
 	       in let new_d =  (Array.get da num_s)
 	       and _s = (String.sub s 1 ((String.length s) -1))
 		  in let d_rec = add _s new_d
@@ -64,7 +64,7 @@ module Dictionnaire =
 	  | Feuille -> 
 	    let da = (Array.make 26 Feuille)
 	    in let char_s = String.get s 0 
-	       in let num_s = (Char.code char_s) - (Char.code 'a')	  
+	       in let num_s = (Char.code char_s) - (Char.code 'A')	  
 		  in let new_d =  (Array.get da num_s)
 		  and _s = (String.sub s 1 ((String.length s) -1))
 		     in let d_rec = add _s new_d
@@ -81,7 +81,7 @@ module Dictionnaire =
        match d with
 	 | (Noeud(da,b)) ->
 	    let char_s = String.get s 0 
-	    in let num_s = (Char.code char_s) - (Char.code 'a')	  
+	    in let num_s = (Char.code char_s) - (Char.code 'A')	  
 	       in let new_d =  (Array.get da num_s)
 	       and _s = (String.sub s 1 ((String.length s) -1))
 		  in let d_rec = remove _s new_d
@@ -101,18 +101,18 @@ module Dictionnaire =
       in parser_dico (tokenize_dico cs)
     ;;
 
-(* NE MARCHE PAS *)
+
     let (to_list : dico -> string list ) = fun d -> 
       let rec (to_list_aux : dico -> int -> string -> string list) = fun da i s ->
 	if (i<0) then 
 	  []
 	else
 	  match da with 
-	    |(Noeud(db,false)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a')) 
+	    |(Noeud(db,false)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'A')) 
 				 in let new_s = (s^char)
 				    in let new_d =  (Array.get db i)
 				       in (to_list_aux2 new_d 25 new_s)
-	    |(Noeud(db,true)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'a'))
+	    |(Noeud(db,true)) ->let char = Char.escaped (Pervasives.char_of_int ( i + Char.code 'A'))
 				in let new_s = (s^char)	  
 				   in let new_d =  (Array.get db i)
 				      in s::(to_list_aux2 new_d 25 new_s)
@@ -134,8 +134,12 @@ module Dictionnaire =
 
 (*FAIRE UN JEU DE TEST + TESTER SUR LE VRAI DICO *)
 
-
+(*
 (*BONUS A FAIRE *)
+
+let x = Dictionnaire.dico_vide;;
+Dictionnaire.add "A" x;;
+
 
 let x = Stream.of_string "z
 a

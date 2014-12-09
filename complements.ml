@@ -1,3 +1,10 @@
+(*#load "dynlink.cma" ;;
+#load "camlp4o.cma";;
+#load "myStream.cmo";;
+
+#use "dictionnaire.ml";;*)
+
+
 (* Permet de déterminer si une chaîne de caractères est un mot en majuscules *)
 let valide s =
   ((String.length s) <> 0) &&
@@ -22,7 +29,11 @@ let dico =
       while true do
 	let l = String.uppercase (input_line flux) in
 	if (valide l) then
-	  mondico := Dictionnaire.add l (!mondico)
+	  begin
+	    print_string l ;
+	    print_string "#";
+	    mondico := Dictionnaire.add l (!mondico);
+	  end
       done;
       !mondico
     end

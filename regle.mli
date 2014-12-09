@@ -1,6 +1,6 @@
 #use "multiensemble.mli";;
 #use "multiensemble.ml";;
-#use "tokenize.ml";;
+(*#use "tokenize.ml";;*)
 
 module type REGLE =
 sig
@@ -22,10 +22,10 @@ sig
 end
 ;;
 
-(*
+
 module Lettres : REGLE
 ;;
 
 module Rummikub : REGLE
 ;;
-*)
+
