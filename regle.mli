@@ -20,13 +20,14 @@ sig
   val ecrit_valeur : t -> string*)
   val fin_pioche_vide : bool
 end
-;;
+
 
 (*
 module Lettres : REGLE
 ;;
 
 module Rummikub : REGLE
-;;
+;;*)
 
-*)
+
+
