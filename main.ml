@@ -1,4 +1,4 @@
-let play = 
+let (play:unit) = 
   while true do
     print_string "Pour jouer au Rami entrez 1 , pour jouer au Rummikub entrez 2\n";
     let x = read_int() in
@@ -8,3 +8,4 @@ let play =
 ;;
 
 
+play;;
