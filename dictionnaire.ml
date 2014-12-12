@@ -1,9 +1,16 @@
-#load "dynlink.cma" ;;
-#load "camlp4o.cma";;
-#load "myStream.cmo";;
+open Tokenize
 
-#use "tokenize.ml";;
-
+module type Dictionnaire =
+  sig
+    type dico = Noeud of dico array * bool | Feuille
+    val dico_vide : dico
+    val member : string -> dico -> bool
+    val add : string -> dico -> dico
+    val remove : string -> dico -> dico
+    val of_stream : char Stream.t -> dico
+    val to_list : dico -> string list
+  end
+;; 
 
 module Dictionnaire =
   struct 
@@ -131,6 +138,7 @@ module Dictionnaire =
   end
 ;;
 
+Dictionnaire.dico_vide;;
 
 (*FAIRE UN JEU DE TEST + TESTER SUR LE VRAI DICO *)
 

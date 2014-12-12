@@ -1,12 +1,6 @@
-(*
-#load "dynlink.cma";;
-#load "camlp4o.cma";;
-#load "myStream.cmo";;*)
-
-#use "type.ml";;
-#use "tokenize.ml" ;;
-#use "pretty_printer.ml"
-
+open Type
+open Tokenize
+open Pretty_printer
 
 
 (* ==== Grammaire du jeu =====
@@ -75,7 +69,7 @@ let (parser_jeu : token Stream.t -> jeu) =
 ;;
 
 (* TESTES *)
-
+(*
 let x = test_tokenize "*";;
 let y = of_bool_token_list_to_token_Stream x;;
 let z =parser_tuile y;;
@@ -135,3 +129,4 @@ let z = parser_jeu y;;
 
 let _  = print_string (( pretty_jeu z) ^"\n");;
 
+*)

@@ -1,8 +1,4 @@
-#load "dynlink.cma" 
-#load "camlp4o.cma"
-#load "myStream.cmo";
-#use "regle.ml";;
-
+open Regle
 
 module TJeu = functor (Rule : REGLE) ->
     struct
@@ -18,7 +14,6 @@ module TJeu = functor (Rule : REGLE) ->
 	and pose_array = Array.make lg false
 	and turn = 0
 	in  {Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = pioche_list;pose = pose_array; tour = turn}
-
       ;;
 (*
       let (lit_coup :  string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option) = fun s m cl b ->
@@ -26,7 +21,7 @@ module TJeu = functor (Rule : REGLE) ->
 	  None
 	else
 	  *)
-      ;;
+      
 
     end
 ;;

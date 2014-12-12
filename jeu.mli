@@ -1,4 +1,4 @@
-#use "regle.ml"
+open Regle
 
 module type TJeu =
   functor (Rule: REGLE) -> sig

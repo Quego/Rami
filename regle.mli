@@ -1,8 +1,6 @@
-#use "multiensemble.mli";;
-#use "multiensemble.ml";;
-(*#use "tokenize.ml";;*)
+open Multiensemble
 
-module type REGLE =
+module type REGLE = 
 sig
   type t
   type combi = t list
@@ -12,7 +10,7 @@ sig
   val paquet : t MultiEnsemble.mset
   val combi_valide : combi -> bool
   val premier_coup_valide : main (* main du joueur *) -> combi list (* pose du joueur *) (* -> main  nouvelle main du joueur *) -> bool
-  val points : combi list (* jeu en cours *) -> main (* main du joueur *) -> combi list (* nouveau jeu *) -> main (* nouvelle main du joueur *) -> int
+ (* val points : combi list (* jeu en cours *) -> main (* main du joueur *) -> combi list (* nouveau jeu *) -> main (* nouvelle main du joueur *) -> int*)
 (*  val points_finaux : main -> int *)
   val main_min : int
   val main_initiale : int
@@ -22,12 +20,12 @@ sig
 end
 
 
-(*
+
 module Lettres : REGLE
 ;;
-
+(*
 module Rummikub : REGLE
-;;*)
-
+;;
+*)
 
 

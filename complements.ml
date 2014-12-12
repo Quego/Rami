@@ -1,9 +1,4 @@
-(*#load "dynlink.cma" ;;
-#load "camlp4o.cma";;
-#load "myStream.cmo";;
-
-#use "dictionnaire.ml";;*)
-
+open Dictionnaire
 
 (* Permet de déterminer si une chaîne de caractères est un mot en majuscules *)
 let valide s =

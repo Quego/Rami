@@ -1,10 +1,6 @@
-#load "dynlink.cma" 
-#load "camlp4o.cma"
-#load "myStream.cmo"
-
+open Multiensemble
+open Dictionnaire
 #use "multiensemble.ml";;
-#use "dictionnaire.ml";;
-#use "regle.mli";;
 
 let (implode : char list -> string ) = fun l ->
   let res = String.create (List.length l) in
@@ -19,8 +15,29 @@ let rec(cpt_c : 'a list -> int ) = fun cl ->
     | [] -> 0
 ;;
 
+let dico = Dictionnaire.dico_vide
+;;
 
-let dico = Dictionnaire.dico_vide;;
+
+module type REGLE =
+sig
+  type t
+  type combi = t list
+  type main = t MultiEnsemble.mset
+  type etat = { noms: string array; scores: int array; mains: main array;
+		table: combi list; pioche: main; pose: bool array; tour: int}
+  val paquet : t MultiEnsemble.mset
+  val combi_valide : combi -> bool
+  val premier_coup_valide : main (* main du joueur *) -> combi list (* pose du joueur *) (* -> main  nouvelle main du joueur *) -> bool
+ (* val points : combi list (* jeu en cours *) -> main (* main du joueur *) -> combi list (* nouveau jeu *) -> main (* nouvelle main du joueur *) -> int*)
+(*  val points_finaux : main -> int *)
+  val main_min : int
+  val main_initiale : int
+ (* val lit_valeur : token list -> t
+  val ecrit_valeur : t -> string*)
+  val fin_pioche_vide : bool
+end
+
 
 
 module Lettres =
@@ -36,7 +53,8 @@ struct
 		table: combi list; pioche: main; pose: bool array; tour: int}
   ;;
 
-  let (paquet : t MultiEnsemble.mset ) = [('A',8);('B',2);('C',3);('D',3);('E',16);('F',2);('G',2);('H',2);('I',9);('J',1);('K',1);('L',6);('M',4);('N',7);('O',7);('P',2);('Q',1);('R',7);('S',7);('T',7);('U',7);('V',2);('W',1);('X',1);('Y',1);('Z',1)]
+  let (paquet : t MultiEnsemble.mset ) = [('A',8);('B',2);('C',3);('D',3);('E',16);('F',2);('G',2);('H',2);('I',9);('J',1);('K',1);('L',6);('M',4);('N',7);('O',7);('P',2);('Q',1);('R',7);('S',7);('T',7);('U',7);('V',2);('W',1);('X',1);('Y',1);('Z',1)] 
+  ;;
   
   let (combi_valide : combi -> bool ) = fun c ->  
    ( (List.length c >= 3) && (Dictionnaire.member (implode c) dico)) 
@@ -59,15 +77,15 @@ struct
 	in premier_coup_valide_cont m cl
       else false
   ;;
-
+(*
   let (points : combi list -> main -> combi list -> main -> int) = fun cl1 m1 cl2 m 2 ->
+
     
-    
-  ;;
+  
 
 
   let (points_finaux : main -> int ) = fun m ->
-  
+*)
   
   let (main_min : int ) = 7
   ;;
@@ -98,7 +116,7 @@ Lettres.premier_coup_valide ['a';'b';'c';'d';'e';'q';'f'] [['a';'b';'c'];['d';'e
 
 *)
 
-
+(*
 (*Cas de deux Joker a gerer :Choix utilisateur ?*)
 let rec (cpt_combi : combi -> int) = fun c ->
   match c with
@@ -171,6 +189,7 @@ let rec (combis_valide : combi list-> bool ) = fun cl ->
   in combis_valide_aux l
 ;;
 
+
 module Rummikub = 
 struct
 
@@ -219,4 +238,4 @@ struct
 
 end
 ;;
-
+*)

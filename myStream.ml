@@ -1,12 +1,4 @@
 
-(* USAGE:
-
- * compilation:
-   ocamlc <file>.ml
-
- * usage:
-   ledit ocaml <file>.cmo 
- *)
 
 let (is_empty: 't Stream.t -> bool) = fun stream ->
       match Stream.peek stream with

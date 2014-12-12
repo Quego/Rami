@@ -9,3 +9,5 @@ module type Dictionnaire =
     val to_list : dico -> string list
   end
 ;;
+
+module Dictionnaire : Dictionnaire

@@ -1,4 +1,4 @@
-#use "type.ml"
+open Type
 
 (* PRETTY PRINTEUR*)
 let (pretty_tuile : tuile -> string ) = fun t -> t 
