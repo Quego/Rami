@@ -1,4 +1,4 @@
-open Multiensemble
+open MultiEnsemble
 
 module type REGLE = 
 sig

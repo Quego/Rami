@@ -8,9 +8,9 @@ module TJeu = functor (Rule : REGLE) ->
 	let lg = List.length sl in
 	let name_array  = Array.of_list sl
 	and scores_array = Array.make lg 0
-	and main_array = Array.make lg  []
+	and main_array = Array.make lg  (MultiEnsemble.vide)
 	and table_list = []
-	and pioche_list = []
+	and pioche_list = [] 
 	and pose_array = Array.make lg false
 	and turn = 0
 	in  {Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = pioche_list;pose = pose_array; tour = turn}

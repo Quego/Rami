@@ -1,13 +1,15 @@
 open Dictionnaire
-open Multiensemble
+open MultiEnsemble
 open Tokenize
-open Complements
 open MyStream
 open Pretty_printer
 open Type
+open Lettres
+open Regle
+open Jeu
 
 let (demandeP : int -> int ) = fun i ->
-  print_string "Veuiller entrez les prenoms";
+  print_string "Veuiller entrez les prenoms \n";
   i;
 ;;
 
