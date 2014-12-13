@@ -5,8 +5,9 @@ open MyStream
 open Pretty_printer
 open Type
 open Lettres
-open Regle
 open Jeu
+
+module L = Jeu(Lettres);;
 
 let (demandeP : int -> int ) = fun i ->
   print_string "Veuiller entrez les prenoms \n";
@@ -47,7 +48,7 @@ let play =
     let nbJ = read_int()
     in let nbP = nbJoueur nbJ
        in let listP = addPrenom nbP
-	  in listP
+	  in L.initialiser listP
 
        
   done

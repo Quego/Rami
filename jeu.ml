@@ -1,6 +1,23 @@
 open Regle
+open MultiEnsemble
 
-module TJeu = functor (Rule : REGLE) ->
+
+
+module type TJeu = functor (Rule: REGLE) -> 
+sig
+   (* val coup_valide : Rule.combi list (* jeu en cours *) -> Rule.main (* main du joueur *)
+      -> Rule.combi list (* nouveau jeu *) -> Rule.main (* nouvelle main du joueur *) -> bool (* a posé *) -> bool*)
+    val initialiser : string list -> Rule.etat
+  (*  val lit_coup : string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option
+    val joue : Rule.etat -> (string * int) list
+    val sauvegarde : Rule.etat -> string
+    val chargement : char Stream.t -> Rule.etat*)
+end
+
+
+
+
+module Jeu: TJeu = functor (Rule : REGLE) ->
     struct
 
 (* Cas des main et de la pioche a faire ( mais j'ai pas fait les fonctions avant ^^*)
@@ -28,11 +45,6 @@ module TJeu = functor (Rule : REGLE) ->
 
 
 
-
-
-module LettresTJeu = TJeu(Lettres);;
-
-LettresTJeu.initialiser ["Quentin";"Thibaul";"Jules"];;
 (*
 type paquet = { cont : contenu; poids : int ; s : solidite }
 ;;
