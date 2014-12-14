@@ -48,7 +48,8 @@ let play =
     let nbJ = read_int()
     in let nbP = nbJoueur nbJ
        in let listP = addPrenom nbP
-	  in L.initialiser listP
+	  in let p = L.initialiser listP
+	     in print_string (L.sauvegarde p)
 
        
   done
