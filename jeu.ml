@@ -1,12 +1,11 @@
-open Regle
+open Lettres
 open MultiEnsemble
-
 
 
 module type TJeu = functor (Rule: REGLE) -> 
 sig
-   (* val coup_valide : Rule.combi list (* jeu en cours *) -> Rule.main (* main du joueur *)
-      -> Rule.combi list (* nouveau jeu *) -> Rule.main (* nouvelle main du joueur *) -> bool (* a posé *) -> bool*)
+    val coup_valide : Rule.combi list (* jeu en cours *) -> Rule.main (* main du joueur *)
+      -> Rule.combi list (* nouveau jeu *) -> Rule.main (* nouvelle main du joueur *) -> bool (* a posé *) -> bool
     val initialiser : string list -> Rule.etat
   (*  val lit_coup : string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option
     val joue : Rule.etat -> (string * int) list
@@ -14,24 +13,50 @@ sig
     val chargement : char Stream.t -> Rule.etat*)
 end
 
-
-
-
 module Jeu: TJeu = functor (Rule : REGLE) ->
     struct
 
-(* Cas des main et de la pioche a faire ( mais j'ai pas fait les fonctions avant ^^*)
+      let (coup_valide : Rule.combi list -> Rule.main -> Rule.combi list -> Rule.main -> bool -> bool ) = fun j m new_j new_m b ->
+	if b then 
+	  (List.map (Rule.combi_valide) new_j) 
+	  
+	else 
+	  let (pose_j : combi list -> combi list -> combi list ) = fun cl1 cl2 ->
+	    cl2 
+	  in
+	    match cl1 with 
+	      |
+	  Rule.premier_coup_valide m (pose_j j new_j)
+
+val filter : ('a -> bool) -> 'a list -> 'a list
+
+filter p l returns all the elements of the list l that satisfy the predicate p. The order of the elements in the input list is preserved.
+	  
+val mem : 'a -> 'a list -> bool
+
+mem a l is true if and only if a is equal to an element of l.
+	  
+
       let (initialiser : string list -> Rule.etat ) = fun sl ->
-	let lg = List.length sl in
-	let name_array  = Array.of_list sl
+	let lg = List.length sl in 
+	let main_array = Array.make lg  (MultiEnsemble.vide) 
+	and name_array  = Array.of_list sl
 	and scores_array = Array.make lg 0
-	and main_array = Array.make lg  (MultiEnsemble.vide)
 	and table_list = []
-	and pioche_list = [] 
 	and pose_array = Array.make lg false
 	and turn = 0
-	in  {Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = pioche_list;pose = pose_array; tour = turn}
+	and pioche_list = ref Rule.paquet in
+	for i = 0 to lg-1 do
+	  for j = 0 to Rule.main_initiale-1 do
+	    let (x,r) = MultiEnsemble.rand !pioche_list in
+	    main_array.(i) <- MultiEnsemble.add x main_array.(i);
+	    pioche_list := r
+	  done
+	done;	   
+	{Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = !pioche_list;pose = pose_array; tour = turn}
       ;;
+
+
 (*
       let (lit_coup :  string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option) = fun s m cl b ->
 	if (bool == false) then
