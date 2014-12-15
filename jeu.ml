@@ -8,8 +8,8 @@ sig
     val coup_valide : Rule.combi list (* jeu en cours *) -> Rule.main (* main du joueur *)
       -> Rule.combi list (* nouveau jeu *) -> Rule.main (* nouvelle main du joueur *) -> bool (* a posé *) -> bool
     val initialiser : string list -> Rule.etat
-  (*  val lit_coup : string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option
-    val joue : Rule.etat -> (string * int) list*)
+    val lit_coup : string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option
+ (*   val joue : Rule.etat -> (string * int) list*)
     val sauvegarde : Rule.etat -> string
   (*  val chargement : char Stream.t -> Rule.etat*)
 end
@@ -97,19 +97,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	"(joueurs" ^ (joueurs "" 0) ^ ") \n"^"(jeu" ^ (jeu "" e.Rule.table)^") \n" ^ "(pioche"^pioche^") \n" ^ "(tour " ^ (string_of_int e.Rule.tour) ^ ")\n"
 	
       ;;
-(*
- let rec tuiles f =
-    let rec lireVal = parser
-      |[<'Analex.RPar>] -> []
-      |[<'Analex.TGen(s);f>] -> (Analex.TGen(s))::(lireVal f) in
-    match f with parser
-      |[<'Analex.TGen(s);l=tuiles>] ->
-	(Rule.lit_valeur ([Analex.TGen(s)]))::l
-      |[<'Analex.LPar;t=lireVal;l=tuiles>] ->
-	(Rule.lit_valeur t)::l
-      |[<>] -> []
- ;;
-*)
+
  let (parser_combi : token Stream.t -> Rule.t) =
    parser 
      | [< '(IdentMaj identmaj); _ >] -> (Rule.lit_valeur [IdentMaj identmaj])
