@@ -49,7 +49,7 @@ let play =
     in let nbP = nbJoueur nbJ
        in let listP = addPrenom nbP
 	  in let p = L.initialiser listP
-	     in print_string (L.sauvegarde p)
+	     in L.joue p
 
        
   done
