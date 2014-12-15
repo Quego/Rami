@@ -24,11 +24,7 @@ let dico =
       while true do
 	let l = String.uppercase (input_line flux) in
 	if (valide l) then
-	  begin
-	    print_string l ;
-	    print_string "#";
-	    mondico := Dictionnaire.add l (!mondico);
-	  end
+	    mondico := Dictionnaire.add l (!mondico)
       done;
       !mondico
     end

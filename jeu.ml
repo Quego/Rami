@@ -13,18 +13,32 @@ sig
   (*  val chargement : char Stream.t -> Rule.etat*)
 end
 
-(*
-  type combi = t list
-  type main = t MultiEnsemble.mset*)
+(
 
 module Jeu: TJeu = functor (Rule : REGLE) ->
     struct
 
-
-(* A FINIR premier if *)
       let (coup_valide : Rule.combi list -> Rule.main -> Rule.combi list -> Rule.main -> bool -> bool ) = fun j m new_j new_m b ->
 	if b then 
-	  List.for_all (fun a -> a==true) (List.map (Rule.combi_valide) new_j) && true
+	  let rec (jouer_main : Rule.main -> Rule.main -> Rule.main ) = fun ma new_ma ->
+	    match new_ma with
+	      |x::xs -> jouer_main (MultiEnsemble.supp x ma) xs
+	      |[] -> ma
+	  and ( combi_list_to_list : Rule.combi list  -> Rule.t list ) = fun cl  ->
+	    match cl with
+	      |[] -> []
+	      |x::xs -> match x with
+		  |[] -> combi_list_to_list xs
+		  |w::ws -> w::(combi_list_to_list ((List.tl x)::xs))
+	  and ( new_multi_ens : Rule.t list -> Rule.main -> Rule.main ) = fun tl m->
+	    match tl with
+	      |[] -> m
+	      |x::xs -> new_multi_ens xs (MultiEnsemble.add x m)
+	      in		
+	  List.for_all (fun a -> a==true) (List.map (Rule.combi_valide) new_j) && 
+	    let a = combi_list_to_list new_j and b = combi_list_to_list j in
+	    let ax = (new_multi_ens a []) and bx = (new_multi_ens b []) in
+	    MultiEnsemble.egal ax  (MultiEnsemble.union bx (jouer_main m new_m))
 	else 
 	  let rec (pose_j : Rule.combi list -> Rule.combi list -> Rule.combi list ) = fun cl1 cl2 ->
 	    match cl2 with
@@ -54,12 +68,6 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	done;	   
 	{Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = !pioche_list;pose = pose_array; tour = turn}
       ;;
-(*
-  type etat = { noms: string array; scores: int array; mains: main array;
-		table: combi list; pioche: main; pose: bool array; tour: int}
-
-  type main = t MultiEnsemble.mset
-*)
 
       let (sauvegarde : Rule.etat -> string ) = fun e ->
 	let rec (affiche_main : Rule.t MultiEnsemble.mset -> string ) = fun m ->
@@ -87,15 +95,25 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	in
 	
 	"(joueurs" ^ (joueurs "" 0) ^ ") \n"^"(jeu" ^ (jeu "" e.Rule.table)^") \n" ^ "(pioche"^pioche^") \n" ^ "(tour " ^ (string_of_int e.Rule.tour) ^ ")\n"
-	*)
+	
       ;;
 (*
-      let (lit_coup :  string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option) = fun s m cl b ->
-	if (bool == false) then
-	  None
+      let (lit_coup :  string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option) = fun joueur m jeu b ->
+	print_string (joueur ^ " à vous de jouer");
+	let x = ref 0 in 
+	while (i>2 && i<1) do
+	  print_string "1 pour jouer, 2 pour piocher \n";
+	  i:= read_int ()
+	done;
+	if (!i == 1) then
+	  let coupvalide = ref false
+	    while not(!coupvalide) do
+	      print_string "Entrez le nouveau jeu\n";
+	      
 	else
-	  *)
-      
+	  None
+      ;;
+      *)
 
     end
 ;;
