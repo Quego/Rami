@@ -123,7 +123,6 @@ type token =
   | Kwd of string
   | LPar
   | RPar
-  | TGen of string
   | Other of string
   | Smb of string
   | Ident of string

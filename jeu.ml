@@ -1,6 +1,7 @@
 open Lettres
 open MultiEnsemble
-
+open Tokenize
+open Parser
 
 module type TJeu = functor (Rule: REGLE) -> 
 sig
@@ -13,7 +14,6 @@ sig
   (*  val chargement : char Stream.t -> Rule.etat*)
 end
 
-(
 
 module Jeu: TJeu = functor (Rule : REGLE) ->
     struct
@@ -98,22 +98,76 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	
       ;;
 (*
+ let rec tuiles f =
+    let rec lireVal = parser
+      |[<'Analex.RPar>] -> []
+      |[<'Analex.TGen(s);f>] -> (Analex.TGen(s))::(lireVal f) in
+    match f with parser
+      |[<'Analex.TGen(s);l=tuiles>] ->
+	(Rule.lit_valeur ([Analex.TGen(s)]))::l
+      |[<'Analex.LPar;t=lireVal;l=tuiles>] ->
+	(Rule.lit_valeur t)::l
+      |[<>] -> []
+ ;;
+*)
+ let (parser_combi : token Stream.t -> Rule.t) =
+   parser 
+     | [< '(IdentMaj identmaj); _ >] -> (Rule.lit_valeur [IdentMaj identmaj])
+     | [< '(Smb "*") ; _ >] -> (Rule.lit_valeur [Smb "*"])
+ ;;
+
+ let rec (parser_combis : token Stream.t -> Rule.combi  ) =
+   parser
+     | [< t = parser_combi ; ts =  parser_combis >] -> t::ts
+     | [< >] -> []
+ ;;
+
+
       let (lit_coup :  string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option) = fun joueur m jeu b ->
 	print_string (joueur ^ " à vous de jouer");
-	let x = ref 0 in 
-	while (i>2 && i<1) do
+	let i = ref 0
+	and res = ref []
+	and new_m = ref [] in 
+	while (!i>2 && !i<1) do
 	  print_string "1 pour jouer, 2 pour piocher \n";
 	  i:= read_int ()
 	done;
 	if (!i == 1) then
-	  let coupvalide = ref false
+	  begin
+	    let coupvalide = ref false in
 	    while not(!coupvalide) do
+	      print_string "Combien de combi y a t'il sur le nouveau jeu?";
+	      let i = ref (read_int()) in
 	      print_string "Entrez le nouveau jeu\n";
-	      
+	      let new_j = ref [] in
+	      while (!i<> 0) do	
+		let s = read_line () in 
+		new_j := (parser_combis(tokenizer(Stream.of_string s)))::(!new_j);	
+		i := !i -1;
+	      done;
+	      print_string "Entrez votre nouvelle main:\n";
+	      let sa = (read_line()) in
+	      new_m := List.fold_right (MultiEnsemble.add) (parser_combis(tokenizer(Stream.of_string sa))) MultiEnsemble.vide; 
+	      if coup_valide jeu m !new_j !new_m b then
+		
+		
+		let res = ref [] in
+		
+		begin
+		  if b then 
+		    res:= !new_j
+		  else 
+		    res:=List.filter (fun a -> not(List.mem a jeu))!new_j;
+		  coupvalide:=true
+		end;
+	    done;
+	    Some(!new_m,!res)
+	  end
+
 	else
 	  None
       ;;
-      *)
+      
 
     end
 ;;

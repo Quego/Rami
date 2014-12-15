@@ -1,6 +1,7 @@
 open Type
 open Tokenize
 open Pretty_printer
+open Lettres
 
 
 (* ==== Grammaire du jeu =====
@@ -40,6 +41,7 @@ let rec (parser_tuiles : token Stream.t -> tuiles ) =
     | [< t = parser_tuile ; ts =  parser_tuiles >] -> t::ts
     | [< >] -> []
 ;;
+
 
 let (parser_coup : token Stream.t -> coup ) =
   parser
