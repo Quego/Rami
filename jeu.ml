@@ -49,7 +49,6 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	  in
 	  Rule.premier_coup_valide m (pose_j j new_j)
 	  
-
       let (initialiser : string list -> Rule.etat ) = fun sl ->
 	let lg = List.length sl in 
 	let main_array = Array.make lg  (MultiEnsemble.vide) 
@@ -68,6 +67,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	done;	   
 	{Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = !pioche_list;pose = pose_array; tour = turn}
       ;;
+
 
       let (sauvegarde : Rule.etat -> string ) = fun e ->
 	let rec (affiche_main : Rule.t MultiEnsemble.mset -> string ) = fun m ->
@@ -89,7 +89,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	and (jeu : string -> Rule.combi list -> string)= fun s ta ->
 	  match ta with
 	    |[] -> s
-	    |c::l -> let combi = List.fold_left (fun s t -> s^" "^(Rule.ecrit_valeur t)) "" c
+	    |c::l -> let combi = List.fold_left (fun s t -> s^(Rule.ecrit_valeur t)^" ") "" c
 		     in jeu (s^"\n ("^combi^")") l
 	and pioche = "\n "^ affiche_main (e.Rule.pioche)
 	in
@@ -136,16 +136,12 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	      print_string "Entrez votre nouvelle main:\n";
 	      let sa = (read_line()) in
 	      new_m := List.fold_right (MultiEnsemble.add) (parser_combis(tokenizer(Stream.of_string sa))) MultiEnsemble.vide; 
-	      if coup_valide jeu m !new_j !new_m b then
-		
-		
-		let res = ref [] in
-		
+	      if coup_valide jeu m !new_j !new_m b then	
 		begin
 		  if b then 
 		    res:= !new_j
 		  else 
-		    res:=List.filter (fun a -> not(List.mem a jeu))!new_j;
+		    res:=List.filter (fun a -> not(List.mem a jeu)) !new_j;
 		  coupvalide:=true
 		end;
 	    done;
@@ -187,12 +183,9 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 		      end
 		  |Some(nvmain,combis) when (e.Rule.pose.(e.Rule.tour)) ->
 		    begin
-		      e.Rule.scores.(e.Rule.tour)<- (* MAJ score *)
-			e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table)
-			(e.Rule.mains.(e.Rule.tour)) (combis) (nvmain);
+		      e.Rule.scores.(e.Rule.tour) <- e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table) (e.Rule.mains.(e.Rule.tour)) (combis) (nvmain);
 		      e.Rule.pose.(e.Rule.tour)<- true; (* MAJ pose *)
-		      if nvmain = MultiEnsemble.vide && (* Partie finie *)
-			(not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) then
+		      if nvmain = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) then
 			begin
 			  for i=0 to (Array.length e.Rule.noms) do
 			    e.Rule.scores.(i) <- Rule.points_finaux (e.Rule.mains.(i));

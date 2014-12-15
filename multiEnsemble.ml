@@ -82,6 +82,7 @@ match l1 with
     |(x,n)::l -> n + taille l
   ;;
 
+(* FONCTION A REVOIR *)
   let (rand : ('a * int) list -> 'a * ('a * int ) list ) = fun x ->
     let tx = taille x 
     in let u = Random.int tx 

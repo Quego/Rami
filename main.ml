@@ -24,7 +24,6 @@ let rec (nbJoueur : int -> int) = fun i ->
 ;;
 
 
-
 let (addPrenom : int -> string list ) = fun i ->
  let rec (addPrenom_aux : int -> string list -> string list ) = fun ia acc ->
   match ia with
