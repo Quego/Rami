@@ -289,10 +289,11 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 
       let (parser_tuile : token Stream.t -> Rule.t ) =
 	parser 
+	  | [< '(IdentMaj "T"); 'LPar ; '(Int int) ; '(Other o) ; '(IdentMaj identmaj ) ; 'RPar >] -> Rule.lit_valeur [IdentMaj "T";LPar;Int int;Other o;IdentMaj identmaj;RPar]
 	  | [< '(IdentMaj identmaj)>] -> Rule.lit_valeur [IdentMaj identmaj]
 	  | [< '(Smb "*") >] -> Rule.lit_valeur [Smb "*"]
       ;;
-      
+
       let rec (parser_tuiles : token Stream.t -> Rule.t list ) =
 	parser
 	  | [< t = parser_tuile ; ts =  parser_tuiles >] -> t::ts
