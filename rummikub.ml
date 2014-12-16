@@ -10,7 +10,7 @@ sig
 		table: combi list; pioche: main; pose: bool array; tour: int}
   val paquet : t MultiEnsemble.mset
   val combi_valide : combi -> bool
-  val premier_coup_valide : main (* main du joueur *) -> combi list (* pose du joueur *) (* -> main  nouvelle main du joueur *) -> bool
+  val premier_coup_valide : main (* main du joueur *) -> combi list (* pose du joueur *)  -> main (* nouvelle main du joueur *) -> bool
   val points : combi list (* jeu en cours *) -> main (* main du joueur *) -> combi list (* nouveau jeu *) -> main (* nouvelle main du joueur *) -> int
   val points_finaux : main -> int 
   val main_min : int
@@ -55,19 +55,10 @@ struct
   let rec (cpt_combi : combi -> int) = fun c ->
     match c with
       | [] -> 0
-      | Joker::[] -> failwith "je vais traiter ce cas stop me faire chier console ! "
-      |Joker::Joker::_  -> failwith "celui la aussi ! "
-      | (T(i1,_))::(T(i2,_))::Joker::cs -> if (i1 == i2)
-	then ((3*i1) + (cpt_combi cs))
-	else (i1 + i2 + i2 + 1 ) + (cpt_combi cs)
-      | (T(i1,_))::Joker::(T(i2,_))::cs -> if (i1 == i2) 
-	then ((3*i1) + (cpt_combi cs))
-	else (i1 + i1 + 1 + i2 ) + (cpt_combi cs)
-      | Joker::(T(i1,_))::(T(i2,_))::cs -> if (i1 == i2) 
-	then ((3*i1) + (cpt_combi cs))
-	else (i1 -1 + i1 + i2 ) + (cpt_combi cs)
       | (T(i,_))::cs -> (i + (cpt_combi cs))
-     |Joker::T (_, _)::_ -> failwith "Y'a pleins de cas dis donc"
+      | _ -> failwith "Unreacheable case"
+      
+
   ;;
 
 
@@ -77,6 +68,16 @@ struct
       | x::xs -> x + (add_list xs)
   ;;
 
+  let rec(joker_present : combi -> bool ) = fun c ->
+match c with
+  |Joker::_ -> false
+  |_::cs -> true && joker_present cs
+  |[] -> true
+  ;;
+
+  let rec(joker_presents : combi list -> bool )= fun cl ->
+    List.for_all joker_present cl 
+  ;;
 
   let (cpt_r : combi list -> int ) = fun cl ->
     add_list (List.map cpt_combi cl)
@@ -129,9 +130,12 @@ struct
 
 
 (* Tester si les combi sont dans la main *)
-  let (premier_coup_valide : main -> combi list -> bool) = fun m cl ->
-    let cpt = cpt_r cl
-    in
+  let (premier_coup_valide : main -> combi list -> main -> bool) = fun m cl new_m ->
+    if joker_presents cl 
+    then false
+    else
+      let cpt = cpt_r cl
+      in
       if (cpt>30)
       then
 	combis_valide cl
@@ -167,7 +171,7 @@ struct
     match tl with
       |[Tokenize.Smb x] -> Joker
       |[Tokenize.IdentMaj "T";Tokenize.LPar;Tokenize.Int i;Tokenize.Other ",";Tokenize.IdentMaj c;Tokenize.RPar] ->  T(i, lit_couleur c )
-      | _ -> failwith "Cas a traiter 2"
+      | _ -> failwith "Mauvaise combi"
   ;;
 
 

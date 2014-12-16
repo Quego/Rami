@@ -27,7 +27,7 @@ sig
 		table: combi list; pioche: main; pose: bool array; tour: int}
   val paquet : t MultiEnsemble.mset
   val combi_valide : combi -> bool
-  val premier_coup_valide : main (* main du joueur *) -> combi list (* pose du joueur *) (* -> main  nouvelle main du joueur *) -> bool
+  val premier_coup_valide : main (* main du joueur *) -> combi list (* pose du joueur *)  -> main  (* nouvelle main du joueur *) -> bool
   val points : combi list (* jeu en cours *) -> main (* main du joueur *) -> combi list (* nouveau jeu *) -> main (* nouvelle main du joueur *) -> int
   val points_finaux : main -> int 
   val main_min : int
@@ -52,7 +52,7 @@ struct
 		table: combi list; pioche: main; pose: bool array; tour: int}
   ;;
 
-  let (paquet : t MultiEnsemble.mset ) = [('A',8);('B',2);('C',3);('D',3);('E',16);('F',2);('G',2);('H',2);('I',9);('J',1);('K',1);('L',6);('M',4);('N',7);('O',7);('P',2);('Q',1);('R',7);('S',7);('T',7);('U',7);('V',2);('W',1);('X',1);('Y',1);('Z',1)] 
+  let (paquet : t MultiEnsemble.mset ) = [('A',8);('B',2);('C',3);('D',3);('E',16);('F',2);('G',2);('H',2);('I',9);('J',1);('K',1);('L',6);('M',4);('N',7);('O',7);('P',2);('Q',1);('R',7);('S',7);('T',7);('U',7);('V',2);('W',1);('X',1);('Y',1);('Z',1);('*',2)] 
   ;;
   
   let (combi_valide : combi -> bool ) = fun c ->  
@@ -61,7 +61,7 @@ struct
 
  
 
-  let rec (premier_coup_valide : main -> combi list -> bool ) = fun m cl ->
+  let rec (premier_coup_valide : main -> combi list -> main -> bool ) = fun m cl new_m ->
     let cpt = cpt_c cl
     in if (cpt >= 6) then
 	let rec (premier_coup_valide_cont : main -> combi list  -> bool ) = fun m cl ->
@@ -106,7 +106,7 @@ match cl2 with
     match t with
       |[Tokenize.IdentMaj s] -> (String.get s 0)
       |[Tokenize.Smb x] -> (String.get x 0)
-      | _ -> failwith "Cas a traiter"
+      | _ -> failwith "Mauvaise combi"
   ;;
 
   let (ecrit_valeur: t -> string ) = fun x ->

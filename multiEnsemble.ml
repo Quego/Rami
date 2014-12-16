@@ -10,7 +10,9 @@ sig
   (* val egal : 'a mset -> 'a mset -> bool*)
 end 
 ;;
-*)
+*)   
+Random.self_init; 
+
 module MultiEnsemble =
 struct
 
