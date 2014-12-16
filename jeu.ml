@@ -11,7 +11,7 @@ sig
     val lit_coup : string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option
     val joue : Rule.etat -> (string * int) list
     val sauvegarde : Rule.etat -> string
-  (*  val chargement : char Stream.t -> Rule.etat*)
+    val chargement : char Stream.t -> Rule.etat
 end
 
 
@@ -153,109 +153,191 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
       ;;
       
 
+
       let rec ( joue : Rule.etat -> (string * int) list ) = fun e ->
 	print_string("\n");
 	print_string(sauvegarde e);
 	print_string("\n");
 	let i = ref 0 in 
-	while !i<>1 && !i<>2 && !i<>3 do
-	  print_string("Entrez 1 pour jouer, 2 pour sauvegarder ou 3 pour quitter \n");
+	while !i<1 || !i>3 
+	do
+	  print_string("Entrez 1 pour jouer, 2 pour sauvegarder, 3 pour recommencer une partie \n");
 	  i:= read_int();
 	done;
 	match !i with
-	  |1 -> 
-	    (match lit_coup (e.Rule.noms.(e.Rule.tour)) (e.Rule.mains.(e.Rule.tour)) (e.Rule.table)
-		(e.Rule.pose.(e.Rule.tour)) with
-		  |None ->
-		    if e.Rule.pioche <> MultiEnsemble.vide then
-		      begin
-			let (t,l) = MultiEnsemble.rand (e.Rule.pioche) in
-			e.Rule.mains.(e.Rule.tour)<- MultiEnsemble.add t (e.Rule.mains.(e.Rule.tour));
-			joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;
-			      mains=e.Rule.mains;
-			      table=e.Rule.table;pioche=l;pose=e.Rule.pose;
-			      tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
-		      end
-		    else
-		      begin
-			print_string("Pioche vide, vous passez votre tour. \n");
-			joue(e)
-		      end
-		  |Some(nvmain,combis) when (e.Rule.pose.(e.Rule.tour)) ->
+	  |1 -> (match lit_coup (e.Rule.noms.(e.Rule.tour)) (e.Rule.mains.(e.Rule.tour)) (e.Rule.table) (e.Rule.pose.(e.Rule.tour)) with
+	      |None ->
+		if e.Rule.pioche <> MultiEnsemble.vide 
+		then
+		  begin
+		    let (t,l) = MultiEnsemble.rand (e.Rule.pioche) in
+		    e.Rule.mains.(e.Rule.tour)<- MultiEnsemble.add t (e.Rule.mains.(e.Rule.tour));
+		    joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;mains=e.Rule.mains;table=e.Rule.table;pioche=l;pose=e.Rule.pose;tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
+		  end
+		else
+		  begin
+		    print_string("Pioche vide, vous passez votre tour. \n");
+		    joue(e)
+		  end
+	      |Some(new_m,combis) when (e.Rule.pose.(e.Rule.tour)) ->
+		begin
+		  e.Rule.scores.(e.Rule.tour) <- e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table) (e.Rule.mains.(e.Rule.tour)) (combis) (new_m);
+		  e.Rule.pose.(e.Rule.tour)<- true; 
+		  if new_m = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) 
+		  then
 		    begin
-		      e.Rule.scores.(e.Rule.tour) <- e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table) (e.Rule.mains.(e.Rule.tour)) (combis) (nvmain);
-		      e.Rule.pose.(e.Rule.tour)<- true; (* MAJ pose *)
-		      if nvmain = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) then
-			begin
-			  for i=0 to (Array.length e.Rule.noms) do
-			    e.Rule.scores.(i) <- Rule.points_finaux (e.Rule.mains.(i));
-			  done;
-			  List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores))
-			end
-		      else (* Partie à continuer *)
-			begin
-			  let rec remplir_main main pioche i =
-			    if i<1 then (main,pioche)
-			    else
-			      let (t,l) = MultiEnsemble.rand (e.Rule.pioche)in
-			      remplir_main (MultiEnsemble.add t main) l
-				(i-1) 
-			  in 
-			  let (m,p)= remplir_main nvmain (e.Rule.pioche)
-			    (Rule.main_min - (MultiEnsemble.taille nvmain)) 
-			  in 
-			  e.Rule.mains.(e.Rule.tour)<- m;
-			  joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;
-				mains=e.Rule.mains;
-				table=combis;pioche=p;pose=e.Rule.pose;
-				tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
-			end
+		      for i=0 to (Array.length e.Rule.noms) 
+		      do
+			e.Rule.scores.(i) <- Rule.points_finaux (e.Rule.mains.(i));
+		      done;
+		      List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores))
 		    end
-		  |Some(nvmain,combis) ->
+		  else (* Partie à continuer *)
 		    begin
-		      e.Rule.scores.(e.Rule.tour)<- (* MAJ score *)
-			e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table)
-			(e.Rule.mains.(e.Rule.tour)) (combis@(e.Rule.table)) (nvmain);
-		      e.Rule.pose.(e.Rule.tour)<- true; (* MAJ pose *)
-		      if nvmain = MultiEnsemble.vide && (* Partie finie *)
-			(not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) then
-			begin
-			  for i=0 to (Array.length e.Rule.noms) do
-			    e.Rule.scores.(i) <- Rule.points_finaux (e.Rule.mains.(i));
-			  done;
-			  List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores))	
-			end
-		      else (* Partie à continuer *)
-			begin
-			  let rec remplir_main main pioche i =
-			    if i<1 then (main,pioche)
-			    else
-			      let (t,l) = MultiEnsemble.rand (e.Rule.pioche)in
-			      remplir_main (MultiEnsemble.add t main) l
-				(i-1) 
-			  in 
-			  let (m,p)= remplir_main nvmain (e.Rule.pioche)
-			    (Rule.main_min - (MultiEnsemble.taille nvmain)) 
-			  in 
-			  e.Rule.mains.(e.Rule.tour)<- m;
-			  joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;
-				mains=e.Rule.mains;
-				table=combis@(e.Rule.table);pioche=p;pose=e.Rule.pose;
-				tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
-			end
+		      let rec (remplir_main : Rule.main -> Rule.main -> int -> Rule.main * Rule.main ) =  fun main pioche i ->
+			if i<1 then (main,pioche)
+			else
+			  let (t,l) = MultiEnsemble.rand (e.Rule.pioche) in
+			  remplir_main (MultiEnsemble.add t main) l (i-1) 
+		      in let (m,p)= remplir_main new_m (e.Rule.pioche) (Rule.main_min - (MultiEnsemble.taille new_m)) 
+			 in e.Rule.mains.(e.Rule.tour)<- m;
+			 joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;mains=e.Rule.mains;table=combis;pioche=p;pose=e.Rule.pose;tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
 		    end
-	    )
+		end
+	      |Some(new_m,combis) ->
+		begin
+		  e.Rule.scores.(e.Rule.tour)<- e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table) (e.Rule.mains.(e.Rule.tour)) (combis@(e.Rule.table)) (new_m);
+		  e.Rule.pose.(e.Rule.tour)<- true; 
+		  if new_m = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) 
+		  then
+		    begin
+		      for i=0 to (Array.length e.Rule.noms) 
+		      do
+			e.Rule.scores.(i) <- Rule.points_finaux (e.Rule.mains.(i));
+		      done;
+		      List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores))	
+		    end
+		  else (* Partie à continuer *)
+		    begin
+		      let rec (remplir_main : Rule.main -> Rule.main -> int -> Rule.main * Rule.main ) =  fun main pioche i ->
+			if i<1 then (main,pioche)
+			else
+			  let (t,l) = MultiEnsemble.rand (e.Rule.pioche)
+			  in remplir_main (MultiEnsemble.add t main) l (i-1) 
+		      in let (m,p)= remplir_main new_m (e.Rule.pioche) (Rule.main_min - (MultiEnsemble.taille new_m)) 
+			 in e.Rule.mains.(e.Rule.tour)<- m;
+			 joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;mains=e.Rule.mains;table=combis@(e.Rule.table);pioche=p;pose=e.Rule.pose;tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
+		    end
+		end)
+	    
 	  |2 ->
 	    begin
-	      print_string("Entrez le nom du fichier: \n");
-	      let out_channel = open_out (read_line()) in
-	      output_string out_channel (sauvegarde e);
-	      close_out out_channel;
-	      joue e;
+	      let save = "Jeuencours" 
+	      in let out_channel = open_out  save 
+		 in output_string out_channel (sauvegarde e);
+		 close_out out_channel;
+		 print_string("Partie sauvegardé");
+		 joue e;
 	    end
 	  |_ -> []
       ;;
 
+      let (list_to_mset) = fun l ->
+	List.fold_right MultiEnsemble.add l MultiEnsemble.vide
+      ;;
+
+      let rec (to_list_1 : ( string * int * bool * Rule.t list ) list  -> string list ) = fun l ->
+	match l with
+	      |[] -> []
+	      |(x,_,_,_)::ls -> x::(to_list_1 ls )
+      ;;
+
+     let rec (to_list_2 : ( string * int * bool * Rule.t list ) list  -> int list ) = fun l ->
+	   match l with
+	      |[] -> []
+	      |(_,x,_,_)::ls -> x::(to_list_2 ls )
+     ;;
+
+     let rec (to_list_3 : ( string * int * bool * Rule.t list ) list  -> bool list ) = fun l ->
+	   match l with
+	      |[] -> []
+	      |(_,_,x,_)::ls -> x::(to_list_3 ls )
+     ;;
+
+     let rec (to_list_4 : ( string * int * bool * Rule.t list ) list  -> Rule.t list list ) = fun l ->
+	  match l with
+	      |[] -> []
+	      |(_,_,_,x)::ls -> x::(to_list_4 ls )
+
+      ;;
+     
+
+      let (parser_tuile : token Stream.t -> Rule.t ) =
+	parser 
+	  | [< '(IdentMaj identmaj)>] -> Rule.lit_valeur [IdentMaj identmaj]
+	  | [< '(Smb "*") >] -> Rule.lit_valeur [Smb "*"]
+      ;;
+      
+      let rec (parser_tuiles : token Stream.t -> Rule.t list ) =
+	parser
+	  | [< t = parser_tuile ; ts =  parser_tuiles >] -> t::ts
+	  | [< >] -> []
+      ;;
+      
+      let (parser_coup : token Stream.t -> Rule.combi ) =
+	parser
+	  | [< 'LPar ; ts = parser_tuiles ; 'RPar >] -> ts
+      ;;
+      
+      let (parser_main : token Stream.t -> Rule.t list ) =
+	parser
+	  | [< 'LPar ; ts = parser_tuiles ; 'RPar >] -> ts
+      ;;
+      
+      let rec (parser_coups : token Stream.t -> Rule.combi list ) =
+	parser 
+	  | [< c = parser_coup ; cs = parser_coups >] -> c::cs
+	  | [< >] -> []
+      ;;
+
+      let (parser_joueur_cont : token Stream.t -> string -> int -> string * int * bool * Rule.t list ) = fun s identmaj int  ->
+	match s with parser
+	  | [< '(Bool "true") ; c = parser_main ; 'RPar >] -> (identmaj,int,true,c)
+	  | [< '(Bool "false") ; c = parser_main ; 'RPar >] -> (identmaj,int,false,c)
+      ;;
+      
+      let (parser_joueur : token Stream.t -> string * int * bool * Rule.t list ) =
+	parser 
+	  | [< 'LPar ; '(IdentMaj identmaj); '(Int int) ; stream >] -> parser_joueur_cont stream identmaj int
+      
+      ;;
+
+      let rec (parser_joueurs : token Stream.t -> ( string * int * bool * Rule.t list ) list ) = 
+	parser
+	  | [< j = parser_joueur ; js =  parser_joueurs >] -> j::js
+	  | [< >] -> []
+      ;;
+      
+      let (parser_jeu : token Stream.t -> Rule.etat) = 
+	parser
+	  | [< 'LPar ; '(Kwd "joueurs") ; js = parser_joueurs ;  'RPar ; 'LPar ; '(Kwd "jeu") ; cs = parser_coups ; 'RPar ; 'LPar ; '(Kwd "pioche") ; ts = parser_tuiles ; 'RPar ; 'LPar ; '(Kwd "tour") ; '(Int int) >] ->  {Rule.noms = Array.of_list (to_list_1 js );																		 scores= Array.of_list (to_list_2 js );
+				   mains=Array.of_list  ( (List.map list_to_mset (to_list_4 js )));
+				   table=cs;
+				   pioche =(list_to_mset ts);
+				   pose = Array.of_list (to_list_3 js );
+				   tour=int}
+;;
+(*
+  type combi = t list
+  type main = t MultiEnsemble.mset
+  type etat = { noms: string array; scores: int array; mains: main array;
+		table: combi list; pioche: main; pose: bool array; tour: int}*)
+ 
+
+      let ( chargement : char Stream.t -> Rule.etat ) = fun cs ->
+	let ts = Tokenize.tokenizer cs in
+	parser_jeu ts
+      ;;
 
     end
 ;;
