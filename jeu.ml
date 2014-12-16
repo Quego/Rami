@@ -174,7 +174,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	let i = ref 0 in 
 	while !i<1 || !i>3 
 	do
-	  print_string("Entrez 1 pour jouer, 2 pour sauvegarder, 3 pour recommencer une partie \n");
+	  print_string("Entrez 1 pour jouer, 2 pour sauvegarder, 3 pour quitter \n");
 	  try
 	    i:= read_int();
 	  with |Failure "int_of_string" -> i:=0
