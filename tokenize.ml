@@ -19,12 +19,12 @@
       ledit ocaml dynlink.cma camlp4o.cma myStream.cmo
       #use "<file>.ml";;
  *)
-
+(*
 
 #load "dynlink.cma" 
 #load "camlp4o.cma"
 #load "myStream.cmo";;
-
+*)
 
 type filename = string;;
 
@@ -179,8 +179,8 @@ let (tokenize_list_file : string -> bool * token list ) = fun str ->
 
 
 
-(* TEST *)
-
+(* ================= TEST  ===================== *)
+ (* 
 let (test_tokenize_dico:string -> bool * token_dico list) = fun string ->
       let (bool,token_stream) = parse_with tokenize_dico string 
       in (bool, MyStream.to_list token_stream)
@@ -195,24 +195,8 @@ let (test_tokenize_with: keywords -> symbols -> bools -> string -> bool * token 
 let (test_tokenize: string -> bool * token list) = fun s -> test_tokenize_with ["joueurs";"jeu"; "pioche";"tour"] [ "(" ; ")"; "*"] ["true";"false"] s
 ;;
 
-(*
-
-test_tokenize "(joueurs
-(Pascal 17 true (S P O I N E * ))
-(Laurent 42 true (N S A V))
-(Marion 0 false (E E I N)))
-(jeu 
-( F A C I L E)
-( C A * B R ))
-(pioche
-C S N H I )
-(tour 3)"
-;;
 
 
-
-let _ =  tokenize_list_file "test.ml" 
-;;
 
 
 *)

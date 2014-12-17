@@ -1,7 +1,6 @@
 open Lettres
 open MultiEnsemble
 open Tokenize
-open Parser
 
 module type TJeu = functor (Rule: REGLE) -> 
 sig
@@ -297,6 +296,26 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 
       ;;
      
+(* =============== Grammaire du jeu ====================
+ 
+   Jeu ::= ( "joueurs" Joueurlist ) ( "jeu" Couplist ) ( "pioche" Tuilelist ) ( "tour" int )
+   
+   Joueurlist ::= Joueur | Joueur Joueurlist
+   
+   Joueur ::= ( ident int Bool Coup )
+  
+   Bool ::= true | false
+
+   Couplist ::= Coup Couplist |    
+ 
+   Coup ::= ( Tuilelist )
+   
+   Tuilelist ::= Tuile Tuilelist |  
+
+   Tuile ::= Char | * | T(int,string)
+
+========================================================= *)
+
       let (parser_tuile_cont : token Stream.t -> string -> Rule.t ) = fun t identmaj ->
 	match t with parser 
 	  | [<  'LPar ; '(Int int) ; '(Other o) ; '(IdentMaj identmaj ) ; 'RPar >] -> Rule.lit_valeur [IdentMaj "T";LPar;Int int;Other o;IdentMaj identmaj;RPar] 
@@ -320,7 +339,6 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
       let (parser_coup : token Stream.t -> Rule.combi ) =
 	parser
 	  | [< 'LPar ; ts = parser_tuiles ; 'RPar >] -> ts
-	(*  | [<>] -> failwith "ICI 2" *)
       ;;
       
       let (parser_main : token Stream.t -> Rule.t list ) =

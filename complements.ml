@@ -30,3 +30,6 @@ let dico =
     end
   with
     End_of_file -> !mondico
+
+
+(* ============= TESTE SUR LE DICTIONNAIRE =================== *)
