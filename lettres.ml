@@ -3,6 +3,7 @@ open Dictionnaire
 open Complements
 open Tokenize
 
+(* Convertie une char liste en string*)
 let (implode : char list -> string ) = fun l ->
   let res = String.create (List.length l) in
   let rec imp i = function
@@ -10,9 +11,11 @@ let (implode : char list -> string ) = fun l ->
   | c :: l -> res.[i] <- c; imp (i + 1) l in
   imp 0 l;;
 
+
+(*Calcule le maximum d'élément dans une liste de liste *)
 let rec(cpt_c : 'a list -> int ) = fun cl ->
   match cl with
-    | t::q -> (List.length t) + (cpt_c q)
+    | t::q -> max (List.length t)  (cpt_c q)
     | [] -> 0
 ;;
 
@@ -59,14 +62,14 @@ struct
    ( (List.length c >= 3) && (Dictionnaire.member (implode c) dico)) 
   ;;
 
- 
+ (* Renvoie true si le premier coup d'un joueur est valide *)
 
-  let rec (premier_coup_valide : main -> combi list -> main -> bool ) = fun m cl new_m ->
-    let cpt = cpt_c cl
+  let rec (premier_coup_valide : main -> combi list -> main -> bool ) = fun m cl new_m -> 
+    let cpt = cpt_c cl (* Verifie que le joueur pose un mot de 6 lettres au moins *)
     in if (cpt >= 6) then
-	let rec (premier_coup_valide_cont : main -> combi list  -> bool ) = fun m cl ->
-	  let rec (premier_coup_valide_aux : main -> combi  -> bool ) = fun ma cla ->
-	    match cla with 
+	let rec (premier_coup_valide_cont : main -> combi list  -> bool ) = fun m cl  -> (*Verifie que les lettres de ce mot proviennent toutes du stock du joueur *)
+	  let rec (premier_coup_valide_aux : main -> combi  -> bool ) = fun ma ca ->
+	    match ca with 
 	      | t::q -> (MultiEnsemble.appartient t ma) && (premier_coup_valide_aux ma q)
 	      | [] -> true
 	  in
@@ -77,6 +80,8 @@ struct
       else false
   ;;
 
+
+(* Compte les points *)
   let (points : combi list -> main -> combi list -> main -> int) = fun j m new_j new_m ->
     let rec ( motPlusLong  : combi list -> combi list -> int ) = fun cl1 cl2 ->
 match cl2 with
@@ -119,19 +124,3 @@ match cl2 with
   end 
 ;;
 
-
-
-(*
-premier_coup_valide_aux ['b';'c';'d'] ['a';'b';'c'];;
-
-cpt_c [['a';'b';'c'];['d';'e';'f']]
-let dico = Dictionnaire.dico_vide;;
-
-Lettres.combi_valide ['a';'b';'c'];;
-Lettres.combi_valide ['d';'e';'f'];;
-
-let dico = Dictionnaire.add "abc" dico;;
-let dico = Dictionnaire.add "def" dico;;
-Lettres.premier_coup_valide ['a';'b';'c';'d';'e';'q';'f'] [['a';'b';'c'];['d';'e';'f']];;
-
-*)

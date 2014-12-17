@@ -50,8 +50,7 @@ struct
   ;;
 
 
-
-(*Cas de deux Joker a gerer :Choix utilisateur ?*)
+(* Compte la somme des nombres des tuiles , les Joker etant interdits au premier tour il ne sont pas pris en compte et le cas du joker n'est pas possible ( traité plus bas *)
   let rec (cpt_combi : combi -> int) = fun c ->
     match c with
       | [] -> 0
@@ -60,13 +59,14 @@ struct
       
 
   ;;
-
+(* Fait la somme d'une liste *)
 
   let rec (add_list : int list -> int ) = fun l ->
     match l with
       | [] -> 0
       | x::xs -> x + (add_list xs)
   ;;
+(* Renvoie true si un joker est present dans une combi *)
 
   let rec(joker_present : combi -> bool ) = fun c ->
 match c with
@@ -75,12 +75,16 @@ match c with
   |[] -> true
   ;;
 
+(* Renvoie true si un joker est present dans une combi list*)
+
   let rec(joker_presents : combi list -> bool )= fun cl ->
     List.for_all joker_present cl 
   ;;
 
   let (cpt_r : combi list -> int ) = fun cl ->
     add_list (List.map cpt_combi cl)
+
+(*Verfie dans le cas d'une pose "couleur" le coup est valide *)
 
   let rec (combi_valide_couleur : combi -> bool) = fun c ->
     match c with 
@@ -97,6 +101,8 @@ match c with
 	else false
       | Joker::Joker::cs -> true && (combi_valide_couleur cs)
   ;;
+
+(*Verfie dans le cas d'une pose "consecutives" le coup est valide *)
 
   let rec (combi_valide_cons : combi -> bool ) = fun c ->
     match c with
@@ -129,7 +135,6 @@ match c with
 
 
 
-(* Tester si les combi sont dans la main *)
   let (premier_coup_valide : main -> combi list -> main -> bool) = fun m cl new_m ->
     if joker_presents cl 
     then false

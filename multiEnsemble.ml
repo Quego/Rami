@@ -1,5 +1,5 @@
-   
-Random.self_init; 
+Random.self_init ;; 
+
 
 module MultiEnsemble =
 struct

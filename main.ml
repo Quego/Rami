@@ -50,8 +50,10 @@ let play =
   print_string "==============================================================\n";
   print_string "================ RAMI/RUMMIKUB MACE/NOUGIUER =================\n";
   print_string "==============================================================\n\n";
-  print_string "Pour jouer au Rami entrez 1 , pour jouer au Rummikub entrez 2\n";
   while (!x<>1 && !x<>2) do   (* Choix du type de partie : Rami/Rummikub *)
+    print_string "==============================================================\n";
+    print_string "Pour jouer au Rami entrez 1 , pour jouer au Rummikub entrez 2\n";
+    print_string "==============================================================\n\n";
     try
       x:= read_int();
     with |Failure "int_of_string" -> x:=0
@@ -63,7 +65,7 @@ let play =
       print_string "==============================================================\n\n";
       while !i<>1 && !i<>2 do
 	print_string "==============================================================\n";
-	print_string("Entrez 1 pour commencer une nouvelle partie, 2 pour charger la partie existante \n");
+	print_string("1 : Nouvelle partie ;  2 : Charger \n");
 	print_string "==============================================================\n\n";
 	try
 	  i:= read_int();
@@ -76,10 +78,10 @@ let play =
 	end
       else
 	begin (* Ecran de selection du nombres de joueurs/prenoms *)
+	  while (!nbJ<1 || !nbJ>7) do
 	  print_string "==============================================================\n";
 	  print_string "A combien voulez vous jouer ? 7 joueurs maximum\n";
 	  print_string "==============================================================\n\n";
-	  while (!nbJ<1 || !nbJ>7) do
 	    try
 	      nbJ:= read_int();
 	    with |Failure "int_of_string" -> nbJ:=0
@@ -98,9 +100,9 @@ let play =
       print_string "Vous jouez au Rummikub\n";
       print_string "==============================================================\n\n";
       while !i<>1 && !i<>2 do
- print_string "==============================================================\n";
-	print_string("Entrez 1 pour commencer une nouvelle partie, 2 pour charger la partie existante \n");
-	 print_string "==============================================================\n\n";
+	print_string "==============================================================\n";
+	print_string("1 : Nouvelle partie ;  2 : Charger \n");
+	print_string "==============================================================\n\n";
 	try
 	  i:= read_int();
 	with |Failure "int_of_string" -> i:=0
@@ -112,10 +114,10 @@ let play =
 	end
       else
 	begin (* Ecran de selection du nombres de joueurs/prenoms *)
-	   print_string "==============================================================\n";
-       	  print_string "A combien voulez vous jouer ? 7 joueurs maximum\n";
-	  print_string "==============================================================\n\n";
 	  while (!nbJ<1 || !nbJ>7) do
+	    print_string "==============================================================\n";
+       	    print_string "A combien voulez vous jouer ? 7 joueurs maximum\n";
+	    print_string "==============================================================\n\n";
 	    try
 	      nbJ:= read_int();
 	    with |Failure "int_of_string" -> nbJ:=0
