@@ -22,10 +22,13 @@ module Dictionnaire =
     ;;
 
 
+(* Retourne un booléen inquiquant la présence ou non d'un mot dans le dictionnaire 
+Prends un string et un dictionnaire en entrée *)
+
     let rec (member : string -> dico -> bool)  = fun s d ->
       if ((String.length s) == 0 ) then 
 	match d with
-	  |(Noeud(_,b)) -> b 
+	  |(Noeud(_,b)) -> b (* Retourne *)
 	  | Feuille -> false			
       else 
 	if ( (String.get s 0) == '*'  )

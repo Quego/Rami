@@ -18,6 +18,8 @@ end
 module Jeu: TJeu = functor (Rule : REGLE) ->
     struct
 
+(* ============================= COUP VALIDE ==================================*) 
+
       let (coup_valide : Rule.combi list -> Rule.main -> Rule.combi list -> Rule.main -> bool -> bool ) = fun j m new_j new_m b ->
 	if b then 
 	  let rec (jouer_main : Rule.main -> Rule.main -> Rule.main ) = fun ma new_ma ->
@@ -49,6 +51,9 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	  in
 	  Rule.premier_coup_valide m (pose_j j new_j) new_m
 	  
+
+(* ============================= INITIALISER ==================================*) 
+
       let (initialiser : string list -> Rule.etat ) = fun sl ->
 	let lg = List.length sl in 
 	let main_array = Array.make lg  (MultiEnsemble.vide) 
@@ -68,6 +73,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	{Rule.noms=name_array;scores=scores_array;mains=main_array;table=table_list;pioche = !pioche_list;pose = pose_array; tour = turn}
       ;;
 
+(* ============================= SAUVEGARDE ==================================*) 
 
       let (sauvegarde : Rule.etat -> string ) = fun e ->
 	let rec (affiche_main : Rule.t MultiEnsemble.mset -> string ) = fun m ->
@@ -98,20 +104,22 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	
       ;;
 
- let (parser_combi : token Stream.t -> Rule.t) =
-   parser  
-     |[< '(IdentMaj "T"); 'LPar ; '(Int i) ; '(Other ",") ; '(IdentMaj c); 'RPar; _ >] -> (Rule.lit_valeur [IdentMaj "T";LPar;Int i;Other ",";IdentMaj c;RPar])
-     | [< '(IdentMaj identmaj); _ >] -> (Rule.lit_valeur [IdentMaj identmaj])
-     | [< '(Smb "*") ; _ >] -> (Rule.lit_valeur [Smb "*"])
+
+(* ============================= LIT COUP ==================================*) 
+
+      let (parser_combi : token Stream.t -> Rule.t) =
+	parser  
+	  |[< '(IdentMaj "T"); 'LPar ; '(Int i) ; '(Other ",") ; '(IdentMaj c); 'RPar; _ >] -> (Rule.lit_valeur [IdentMaj "T";LPar;Int i;Other ",";IdentMaj c;RPar])
+	  | [< '(IdentMaj identmaj); _ >] -> (Rule.lit_valeur [IdentMaj identmaj])
+	  | [< '(Smb "*") ; _ >] -> (Rule.lit_valeur [Smb "*"])
     
+      ;;
+      
+      let rec (parser_combis : token Stream.t -> Rule.combi  ) =
+	parser
+	  | [< t = parser_combi ; ts =  parser_combis >] -> t::ts
+	  | [< >] -> []
  ;;
-
- let rec (parser_combis : token Stream.t -> Rule.combi  ) =
-   parser
-     | [< t = parser_combi ; ts =  parser_combis >] -> t::ts
-     | [< >] -> []
- ;;
-
 
       let (lit_coup :  string -> Rule.main -> Rule.combi list -> bool -> (Rule.main * (Rule.combi list)) option) = fun joueur m jeu b ->
 	print_string (joueur ^ " à vous de jouer : ");
@@ -130,20 +138,21 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	    let coupvalide = ref false in
 	    while not(!coupvalide) do
 	      print_string "Combien de combi y a t'il sur le nouveau jeu?\n";
-	      	while (!c==0) do
+	      	while (!c<=0) do
 		  try
 		    c:= read_int();
 		  with |Failure "int_of_string" -> c:=0
 		done;
 	      print_string "Entrez le nouveau jeu\n";
 	      let new_j = ref [] in
-	      while (!c<> 0) do	
+	      while (!c>0) do	
 		let s = read_line () in 
 		try
 		  new_j := (parser_combis(tokenizer(Stream.of_string s)))::(!new_j);
-		with | Failure("Mauvaise combi") -> new_j:=[];
-		c := !c -1;
+		  c := !c-1;
+		with | Failure("Mauvaise combi") -> new_j:=[]
 	      done;
+	      c := 0;
 	      print_string "Entrez votre nouvelle main:\n";
 	      let sa = (read_line()) in
 	      try
@@ -165,7 +174,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	  None
       ;;
       
-
+(* ============================= JOUE ==================================*) 
 
       let rec ( joue : Rule.etat -> (string * int) list ) = fun e ->
 	print_string("\n");
@@ -257,6 +266,8 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	  |_ -> []
       ;;
 
+(* ============================= CHARGEMENT ==================================*)
+
       let (list_to_mset) = fun l ->
 	List.fold_right MultiEnsemble.add l MultiEnsemble.vide
       ;;
@@ -286,28 +297,36 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 
       ;;
      
+      let (parser_tuile_cont : token Stream.t -> string -> Rule.t ) = fun t identmaj ->
+	match t with parser 
+	  | [<  'LPar ; '(Int int) ; '(Other o) ; '(IdentMaj identmaj ) ; 'RPar >] -> Rule.lit_valeur [IdentMaj "T";LPar;Int int;Other o;IdentMaj identmaj;RPar] 
+	  | [< >] -> Rule.lit_valeur [IdentMaj identmaj]
 
       let (parser_tuile : token Stream.t -> Rule.t ) =
 	parser 
-	  | [< '(IdentMaj "T"); 'LPar ; '(Int int) ; '(Other o) ; '(IdentMaj identmaj ) ; 'RPar >] -> Rule.lit_valeur [IdentMaj "T";LPar;Int int;Other o;IdentMaj identmaj;RPar]
-	  | [< '(IdentMaj identmaj)>] -> Rule.lit_valeur [IdentMaj identmaj]
+	  | [< '(IdentMaj identmaj); s >] -> parser_tuile_cont s identmaj 
 	  | [< '(Smb "*") >] -> Rule.lit_valeur [Smb "*"]
+
       ;;
+ 
 
       let rec (parser_tuiles : token Stream.t -> Rule.t list ) =
 	parser
 	  | [< t = parser_tuile ; ts =  parser_tuiles >] -> t::ts
 	  | [< >] -> []
+	  | [<>] -> []
       ;;
       
       let (parser_coup : token Stream.t -> Rule.combi ) =
 	parser
 	  | [< 'LPar ; ts = parser_tuiles ; 'RPar >] -> ts
+	(*  | [<>] -> failwith "ICI 2" *)
       ;;
       
       let (parser_main : token Stream.t -> Rule.t list ) =
 	parser
 	  | [< 'LPar ; ts = parser_tuiles ; 'RPar >] -> ts
+	  | [<>] -> failwith "ICI 3"
       ;;
       
       let rec (parser_coups : token Stream.t -> Rule.combi list ) =
@@ -325,7 +344,6 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
       let (parser_joueur : token Stream.t -> string * int * bool * Rule.t list ) =
 	parser 
 	  | [< 'LPar ; '(IdentMaj identmaj); '(Int int) ; stream >] -> parser_joueur_cont stream identmaj int
-      
       ;;
 
       let rec (parser_joueurs : token Stream.t -> ( string * int * bool * Rule.t list ) list ) = 
@@ -336,12 +354,13 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
       
       let (parser_jeu : token Stream.t -> Rule.etat) = 
 	parser
-	  | [< 'LPar ; '(Kwd "joueurs") ; js = parser_joueurs ;  'RPar ; 'LPar ; '(Kwd "jeu") ; cs = parser_coups ; 'RPar ; 'LPar ; '(Kwd "pioche") ; ts = parser_tuiles ; 'RPar ; 'LPar ; '(Kwd "tour") ; '(Int int) >] ->  {Rule.noms = Array.of_list (to_list_1 js );																		 scores= Array.of_list (to_list_2 js );
+	  | [< 'LPar ; '(Kwd "joueurs") ; js = parser_joueurs ;  'RPar ; 'LPar ; '(Kwd "jeu") ; cs = parser_coups ;  'RPar ; 'LPar ; '(Kwd "pioche") ; ts = parser_tuiles ; 'RPar ; 'LPar ; '(Kwd "tour") ; '(Int int) >] ->  {Rule.noms = Array.of_list (to_list_1 js );																		 scores= Array.of_list (to_list_2 js );
 				   mains=Array.of_list  ( (List.map list_to_mset (to_list_4 js )));
 				   table=cs;
 				   pioche =(list_to_mset ts);
 				   pose = Array.of_list (to_list_3 js );
 				   tour=int}
+	  | [< >] -> failwith "ICI 6"
 ;;
 (*
   type combi = t list

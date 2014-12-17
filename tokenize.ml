@@ -194,7 +194,8 @@ let (test_tokenize_with: keywords -> symbols -> bools -> string -> bool * token 
 
 let (test_tokenize: string -> bool * token list) = fun s -> test_tokenize_with ["joueurs";"jeu"; "pioche";"tour"] [ "(" ; ")"; "*"] ["true";"false"] s
 ;;
- (*
+
+(*
 
 test_tokenize "(joueurs
 (Pascal 17 true (S P O I N E * ))
