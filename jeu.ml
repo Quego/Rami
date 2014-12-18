@@ -207,15 +207,12 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	      print_string "==============================================================\n\n";
 	      new_m := [];	      
 	      let sa = (read_line()) 
-	      and ok = ref false 
 	      in
-	      while (!ok) do
-		try
-		  ok := true;
+	   (*   while (!new_main == []) do
+		try*)
 		  new_m := List.fold_right (MultiEnsemble.add) (parser_combis(tokenizer(Stream.of_string sa))) MultiEnsemble.vide; 
-		with | Failure("Mauvaise combi") -> ok := false;
-		  ok := true;
-	      done;
+	(*	with | Failure("Mauvaise combi") -> new_m := [];
+	    done;*)
 	      if coup_valide jeu m !new_j !new_m b then	
 		begin
 		  if b then 
@@ -283,8 +280,11 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 			(* On verifie si le joueurs doit remplir ca main ou non et le fait *)
 			if i<1 then (main,pioche)
 			else
+			  if (e.Rule.pioche <> [] ) 
+			  then
 			  let (t,l) = MultiEnsemble.rand (e.Rule.pioche) in
 			  remplir_main (MultiEnsemble.add t main) l (i-1) 
+			  else (main,pioche)
 		      in let (m,p)= remplir_main new_m (e.Rule.pioche) (Rule.main_min - (MultiEnsemble.taille new_m)) 
 			 in e.Rule.mains.(e.Rule.tour)<- m;
 			 joue({Rule.noms=e.Rule.noms;
@@ -315,8 +315,11 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 			(* On verifie si le joueurs doit remplir ca main ou non et le fait *)
 			if i<1 then (main,pioche)
 			else
+			  if (e.Rule.pioche <> [] ) 
+			  then
 			  let (t,l) = MultiEnsemble.rand (e.Rule.pioche)
-			  in remplir_main (MultiEnsemble.add t main) l (i-1) 
+			  in remplir_main (MultiEnsemble.add t main) l (i-1)
+			  else (main,pioche)
 		      in let (m,p)= remplir_main new_m (e.Rule.pioche) (Rule.main_min - (MultiEnsemble.taille new_m)) 
 			 in e.Rule.mains.(e.Rule.tour)<- m;
 			 joue({Rule.noms=e.Rule.noms;
