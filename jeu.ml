@@ -49,10 +49,10 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 		else t::(pose_j cl1 q)
 	      |[]-> []	    
 	  in
-	  (Rule.premier_coup_valide m (pose_j j new_j) new_m)(* && 
+	  (Rule.premier_coup_valide m (pose_j j new_j) new_m) && 
 	    let a = combi_list_to_list new_j and b = combi_list_to_list j in
 	    let ax = (new_multi_ens a []) and bx = (new_multi_ens b []) in
-	    MultiEnsemble.egal ax  (MultiEnsemble.union bx (jouer_main m new_m))*)
+	    MultiEnsemble.egal ax  (MultiEnsemble.union bx (jouer_main m new_m))
 	  
    
 

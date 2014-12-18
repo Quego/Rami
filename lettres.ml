@@ -89,11 +89,10 @@ match cl2 with
     then motPlusLong cl1 q
     else max (List.length t) (motPlusLong cl1 q)
     in
-    let p = (List.length m) - (List.length new_m)
+    let p =  (List.fold_left (+) 0 (List.map snd m)) - (List.fold_left (+) 0 (List.map snd new_m))
     in if ((List.length new_m) == 0 ) 
       then 2*p + (motPlusLong j new_j) 
       else p + (motPlusLong j new_j)
-    
 
 
   let (points_finaux : main -> int ) = fun m -> 0
