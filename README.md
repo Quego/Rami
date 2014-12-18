@@ -22,6 +22,8 @@ NB : La fonction Random renvoie toujours la même suite de nombre , ce qui ne pe
 
 (* UTILISTION DU JEU *)
 
+-make pour compiler les fichiers
+
 
 -Pour lancer le jeu il faut faire un :
 
