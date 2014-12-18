@@ -1,4 +1,4 @@
-open Lettres
+open Rami
 open MultiEnsemble
 open Tokenize
 
@@ -168,6 +168,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	let i = ref 0
 	and c = ref 0
 	and res = ref []
+	and sa = ref ""
 	and new_j = ref []
 	and new_m = ref [] in 
 	while (!i>2 || !i<1) do (* Choix Pioche / Joue *)
@@ -205,12 +206,12 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	      print_string "==============================================================\n";
 	      print_string "Entrez votre nouvelle main\n";
 	      print_string "==============================================================\n\n";
-	      new_m := [];	      
-	      let sa = (read_line()) 
-	      in
+	      new_m := [];
+	      sa := "";	      
+	      sa := (read_line()) ;
 	   (*   while (!new_main == []) do
 		try*)
-		  new_m := List.fold_right (MultiEnsemble.add) (parser_combis(tokenizer(Stream.of_string sa))) MultiEnsemble.vide; 
+		  new_m := List.fold_right (MultiEnsemble.add) (parser_combis(tokenizer(Stream.of_string !sa))) MultiEnsemble.vide; 
 	(*	with | Failure("Mauvaise combi") -> new_m := [];
 	    done;*)
 	      if coup_valide jeu m !new_j !new_m b then	
