@@ -42,7 +42,7 @@ end
 
 
 
-module Lettres : REGLE with type t=char =
+module Rami : REGLE with type t=char =
 struct
   
   type t = char

@@ -2,12 +2,12 @@ open Dictionnaire
 open MultiEnsemble
 open Tokenize
 open MyStream
-open Lettres
+open Rami
 open Rummikub
 open Jeu
 
 module R = Jeu(Rummikub);;
-module L = Jeu(Lettres);;
+module L = Jeu(Rami);;
 
 
 (* ============================== *)

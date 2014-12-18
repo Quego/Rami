@@ -9,11 +9,13 @@ D'autre part, nous aurons différentes régles de comptage des scores en fonctio
 
 Le sujet de base ( sans les bonus ) à été réalisé 
 
--MultiEnsemble : Toutes les fonctions implémenté fonctionnent
--Dictionnaire  : Toutes les fonctions implémenté fonctionnent
--Save/Load     : Toutes les fonctions implémenté fonctionnent
--Rami          : Bug pour l'instant sur la vérification des coups 
--Rummikub      : Bug pour l'instant sur la vérification des coups 
+-MultiEnsemble : Toutes les fonctions fonctionnent
+-Dictionnaire  : Toutes les fonctions fonctionnent
+-Save/Load     : Toutes les fonctions fonctionnent
+-Rami          : Toutes les fonctions fonctionnent
+-Rummikub      : Toutes les fonctions fonctionnent
+-Jeu           : Toutes les fonctions fonctionnent
+
 
 
 NB : La fonction Random renvoie toujours la même suite de nombre , ce qui ne permet pas d'avoir des distributions de jeu différentes à chaque partie. Elle sera aléatoire mais ce sera toujours la même.
