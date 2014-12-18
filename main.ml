@@ -124,7 +124,9 @@ let play =
 	      nbJ:= read_int();
 	    with |Failure "int_of_string" -> nbJ:=0
 	  done;
+	  print_string "==============================================================\n";
 	  print_string "Nom des joueurs?\n";
+	  print_string "==============================================================\n\n";
 	  let listP = addPrenom !nbJ
 	  in let p = R.initialiser listP
 	     in  affScores (R.joue p) (* Lancement de la partie *)
