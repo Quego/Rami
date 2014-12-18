@@ -337,7 +337,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 		 in output_string out_channel (sauvegarde e);
 		 close_out out_channel;
 		 print_string "==============================================================\n";
-		 print_string("Partie sauvegardé");
+		 print_string("Partie sauvegardé\n");
 		 print_string "==============================================================\n";
 		 joue e;
 	    end
