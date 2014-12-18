@@ -136,7 +136,7 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	and pioche = "\n "^ affiche_main (e.Rule.pioche)
 	in
 	
-	"Joueurs :" ^ (joueurs "" 0) ^ " \n"^"Table :" ^ (jeu "" e.Rule.table)^"\n" ^ "Pioche : "^pioche^") \n" ^ "Tour n° : " ^ (string_of_int e.Rule.tour) ^ "\n"
+	"Joueurs :" ^ (joueurs "" 0) ^ " \n"^"Table :" ^ (jeu "" e.Rule.table)^"\n" ^ "Pioche : "^pioche^" \n" ^ "Tour n° : " ^ (string_of_int e.Rule.tour) ^ "\n"
 	
       ;;
 
@@ -203,13 +203,18 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	      done;
 	      c := 0;
 	      print_string "==============================================================\n";
-	      print_string "Entrez votre nouvelle main:\n";
-	      print_string "==============================================================\n\n";	      
-	      let sa = (read_line()) in
-	      while (!new_m = []) do
+	      print_string "Entrez votre nouvelle main\n";
+	      print_string "==============================================================\n\n";
+	      new_m := [];	      
+	      let sa = (read_line()) 
+	      and ok = ref false 
+	      in
+	      while (!ok) do
 		try
+		  ok := true;
 		  new_m := List.fold_right (MultiEnsemble.add) (parser_combis(tokenizer(Stream.of_string sa))) MultiEnsemble.vide; 
-		with | Failure("Mauvaise combi") -> new_m :=[]
+		with | Failure("Mauvaise combi") -> ok := false;
+		  ok := true;
 	      done;
 	      if coup_valide jeu m !new_j !new_m b then	
 		begin
@@ -243,74 +248,86 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 	  with |Failure "int_of_string" -> i:=0
 	done;
 	match !i with
-	  |1 -> (match lit_coup (e.Rule.noms.(e.Rule.tour)) (e.Rule.mains.(e.Rule.tour)) (e.Rule.table) (e.Rule.pose.(e.Rule.tour)) with
-	      |None ->
-		if e.Rule.pioche <> MultiEnsemble.vide 
+	  |1 -> (match lit_coup (e.Rule.noms.(e.Rule.tour)) (e.Rule.mains.(e.Rule.tour)) (e.Rule.table) (e.Rule.pose.(e.Rule.tour)) with (* Choix de Jouer *)
+	      |None -> (* Dans le cas ou le joueurs souhait piocher *)
+		if (e.Rule.pioche <> MultiEnsemble.vide) (* Si la pioche n'est pas vide on remplit la main du joueurs avec une tuiles *)
 		then
 		  begin
 		    let (t,l) = MultiEnsemble.rand (e.Rule.pioche) in
 		    e.Rule.mains.(e.Rule.tour)<- MultiEnsemble.add t (e.Rule.mains.(e.Rule.tour));
 		    joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;mains=e.Rule.mains;table=e.Rule.table;pioche=l;pose=e.Rule.pose;tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
 		  end
-		else
+		else (* Si la pioche est vide *)
 		  begin
 		    print_string "==============================================================\n";
 		    print_string("Pioche vide, vous passez votre tour. \n");
 		    print_string "==============================================================\n\n";
 		    joue(e)
 		  end
-	      |Some(new_m,combis) when (e.Rule.pose.(e.Rule.tour)) ->
+	      |Some(new_m,combis) when (e.Rule.pose.(e.Rule.tour)) -> (* Jouer est choisi est que le joueur a déja posé *)
 		begin
-		  e.Rule.scores.(e.Rule.tour) <- e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table) (e.Rule.mains.(e.Rule.tour)) (combis) (new_m);
-		  e.Rule.pose.(e.Rule.tour)<- true; 
-		  if new_m = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) 
+		  e.Rule.scores.(e.Rule.tour) <- e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table) (e.Rule.mains.(e.Rule.tour)) (combis) (new_m); (* Maj du score *)
+		  e.Rule.pose.(e.Rule.tour)<- true;  (* On met le fait que le joueur a posé a vrai *)
+		  if new_m = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) (* On verifie si le jeu est fini ou non *)
 		  then
 		    begin
 		      for i=0 to (Array.length e.Rule.noms) 
 		      do
-			e.Rule.scores.(i) <- Rule.points_finaux (e.Rule.mains.(i));
+			e.Rule.scores.(i) <- e.Rule.scores.(i) + Rule.points_finaux (e.Rule.mains.(i)); (* Maj du score *)
 		      done;
-		      List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores))
+		      List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores)) (* On renvoie le score et les noms *)
 		    end
 		  else
 		    begin
-		      let rec (remplir_main : Rule.main -> Rule.main -> int -> Rule.main * Rule.main ) =  fun main pioche i ->
+		      let rec (remplir_main : Rule.main -> Rule.main -> int -> Rule.main * Rule.main ) =  fun main pioche i -> 
+			(* On verifie si le joueurs doit remplir ca main ou non et le fait *)
 			if i<1 then (main,pioche)
 			else
 			  let (t,l) = MultiEnsemble.rand (e.Rule.pioche) in
 			  remplir_main (MultiEnsemble.add t main) l (i-1) 
 		      in let (m,p)= remplir_main new_m (e.Rule.pioche) (Rule.main_min - (MultiEnsemble.taille new_m)) 
 			 in e.Rule.mains.(e.Rule.tour)<- m;
-			 joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;mains=e.Rule.mains;table=combis;pioche=p;pose=e.Rule.pose;tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
+			 joue({Rule.noms=e.Rule.noms;
+			       scores=e.Rule.scores;
+			       mains=e.Rule.mains;
+			       table=combis;
+			       pioche=p;
+			       pose=e.Rule.pose;
+			       tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
 		    end
 		end
-	      |Some(new_m,combis) ->
+	      |Some(new_m,combis) -> (* Première fois que le joueurs joue *)
 		begin
 		  e.Rule.scores.(e.Rule.tour)<- e.Rule.scores.(e.Rule.tour) + Rule.points (e.Rule.table) (e.Rule.mains.(e.Rule.tour)) (combis@(e.Rule.table)) (new_m);
 		  e.Rule.pose.(e.Rule.tour)<- true; 
-		  if new_m = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) 
+		  if new_m = MultiEnsemble.vide && (not(Rule.fin_pioche_vide) || e.Rule.pioche=[]) (* On verifie si la partie est fini *)
 		  then
 		    begin
 		      for i=0 to (Array.length e.Rule.noms) 
 		      do
-			e.Rule.scores.(i) <- Rule.points_finaux (e.Rule.mains.(i));
+			e.Rule.scores.(i) <- e.Rule.scores.(i) + Rule.points_finaux (e.Rule.mains.(i));(* Maj du score *)
 		      done;
-		      List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores))	
+		      List.combine(Array.to_list (e.Rule.noms))(Array.to_list (e.Rule.scores))	(* On renvoie le score et les noms *)
 		    end
 		  else 
 		    begin
 		      let rec (remplir_main : Rule.main -> Rule.main -> int -> Rule.main * Rule.main ) =  fun main pioche i ->
+			(* On verifie si le joueurs doit remplir ca main ou non et le fait *)
 			if i<1 then (main,pioche)
 			else
 			  let (t,l) = MultiEnsemble.rand (e.Rule.pioche)
 			  in remplir_main (MultiEnsemble.add t main) l (i-1) 
 		      in let (m,p)= remplir_main new_m (e.Rule.pioche) (Rule.main_min - (MultiEnsemble.taille new_m)) 
 			 in e.Rule.mains.(e.Rule.tour)<- m;
-			 joue({Rule.noms=e.Rule.noms;scores=e.Rule.scores;mains=e.Rule.mains;table=combis@(e.Rule.table);pioche=p;pose=e.Rule.pose;tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
+			 joue({Rule.noms=e.Rule.noms;
+			       scores=e.Rule.scores;
+			       mains=e.Rule.mains;
+			       table=combis@(e.Rule.table);pioche=p;
+			       pose=e.Rule.pose;tour=(e.Rule.tour+1) mod (Array.length (e.Rule.noms))})
 		    end
 		end)
 	    
-	  |2 ->
+	  |2 -> (* Sauvegarde de la partie *)
 	    begin
 	      let save = "Jeuencours" 
 	      in let out_channel = open_out  save 
@@ -434,7 +451,6 @@ module Jeu: TJeu = functor (Rule : REGLE) ->
 				   pioche =(list_to_mset ts);
 				   pose = Array.of_list (to_list_3 js );
 				   tour=int}
-	  | [< >] -> failwith "ICI 6"
 ;;
 
 

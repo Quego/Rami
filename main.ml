@@ -40,8 +40,16 @@ let (addPrenom : int -> string list ) = fun i ->
 (* =========================== PLAY =================== *)
 
 (* Fonction principale qui lance le jeu *)
-
-
+let rec (affScores) = fun e ->
+  match e with 
+  |[] -> print_string("\n")
+  |(n,s)::l -> 
+    begin
+      print_string "==============================================================\n";
+      print_string ("Le joueur "^n ^" a un score de " ^(string_of_int s) ^ "\n");
+      print_string "==============================================================\n";
+      affScores l;
+    end
 
 let play =   
   let i = ref 0
@@ -72,16 +80,13 @@ let play =
 	with |Failure "int_of_string" -> i:=0
       done;
       if !i = 2 then (* Chargement de la partie *)
-	begin
-	  let save = "Jeuencours" in 
-	  L.joue (L.chargement(Stream.of_channel(open_in (save))))
-	end
+	  affScores (L.joue(L.chargement(Stream.of_channel(open_in ("Jeuencours")))))
       else
 	begin (* Ecran de selection du nombres de joueurs/prenoms *)
 	  while (!nbJ<1 || !nbJ>7) do
-	  print_string "==============================================================\n";
-	  print_string "A combien voulez vous jouer ? 7 joueurs maximum\n";
-	  print_string "==============================================================\n\n";
+	    print_string "==============================================================\n";
+	    print_string "A combien voulez vous jouer ? 7 joueurs maximum\n";
+	    print_string "==============================================================\n\n";
 	    try
 	      nbJ:= read_int();
 	    with |Failure "int_of_string" -> nbJ:=0
@@ -91,7 +96,7 @@ let play =
 	  print_string "==============================================================\n\n";
 	  let listP = addPrenom !nbJ
 	  in let p = L.initialiser listP
-	     in (L.joue p) (* Lancement de la partie *) 
+	     in affScores (L.joue p)(* Lancement de la partie *) 
 	end
     end
   else (* Si rummibuk choisi *)
@@ -108,10 +113,7 @@ let play =
 	with |Failure "int_of_string" -> i:=0
       done;
       if !i = 2 then (* Chargement de la partie *)
-	begin
-	  let save = "Jeuencours" in 
-	  R.joue (R.chargement(Stream.of_channel(open_in (save))))
-	end
+	affScores (R.joue(R.chargement(Stream.of_channel(open_in ("Jeuencours")))))
       else
 	begin (* Ecran de selection du nombres de joueurs/prenoms *)
 	  while (!nbJ<1 || !nbJ>7) do
@@ -125,7 +127,7 @@ let play =
 	  print_string "Nom des joueurs?\n";
 	  let listP = addPrenom !nbJ
 	  in let p = R.initialiser listP
-	     in (R.joue p) (* Lancement de la partie *) 
+	     in  affScores (R.joue p) (* Lancement de la partie *)
 	end
     end 
 ;;

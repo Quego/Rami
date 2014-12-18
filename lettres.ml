@@ -80,7 +80,6 @@ struct
       else false
   ;;
 
-
 (* Compte les points *)
   let (points : combi list -> main -> combi list -> main -> int) = fun j m new_j new_m ->
     let rec ( motPlusLong  : combi list -> combi list -> int ) = fun cl1 cl2 ->
