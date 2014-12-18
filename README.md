@@ -31,6 +31,8 @@ NB : La fonction Random renvoie toujours la même suite de nombre , ce qui ne pe
 
 A partir de ce moment la les différents choix sont guidés dans le jeu
 
+-Pour charger un jeu , il faut que la sauvegarde corresponde au type du jeu selectionné
+
 -Pour rentrée la "Main" / le "Nouveau Jeu" / les "Prenoms"
 Il faut : 
 * Une combinaison par ligne / Prenom
